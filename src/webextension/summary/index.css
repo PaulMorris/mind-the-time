@@ -1,0 +1,210 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+/* Styles for the summary page (index.html) */
+
+body {
+    text-align: center;
+    font-family: verdana,arial,helvetica,sans-serif;
+    margin: 0px;
+    background-image: linear-gradient(to bottom , rgb(173, 181, 194), rgb(191, 198, 209) 80px, rgb(201,208,219));
+    background-color: rgb(201, 208, 219);
+    background-repeat: repeat-x;
+    background-attachment: fixed;
+}
+
+#topnav {
+    position: fixed;
+    width: 100%;
+    font-size: 11px;
+    background: rgb(110, 118, 134);
+    box-shadow: 0px 2px 2px rgba(100, 100, 100, 0.3);
+}
+
+#row0 {
+    padding-top: 50px;
+}
+
+#headerUL {
+    list-style: none;
+    padding: 0 18px;
+    margin: 0px;
+    display: inline-block;
+}
+#headerUL li {
+    display: inline-block;
+}
+#headerUL li a {
+    display: inline-block;
+    color: rgb(238, 238, 238);
+    padding: 7px 18px;
+    text-decoration: none;
+    cursor: pointer;
+}
+#headerUL li a:hover {
+    background: rgb(90, 98, 114);
+}
+#loadFailMessage {
+    color: #737a88;
+    padding-top: 80px;
+}
+
+.big-row {
+    display: flex;
+    justify-content: center;
+    padding: 0 20px;
+}
+
+.big-row-header {
+
+    margin-top: 30px;
+    padding-top: 5px;
+    color: rgb(105,112,126);
+    font-size: 0.6em;
+    display: none;
+}
+
+.sum-box {
+    margin: 0px 20px;
+}
+
+.MTTtable {
+    font-size: 12px;
+    margin: 30px 0;
+    border-collapse: collapse;
+}
+.MTTtable tr {
+    background: rgb(238, 238, 238);
+}
+tr.headerrow {
+    background: transparent;
+    line-height: 2em;
+}
+.headertd {
+    padding: 0;
+    background: #8c94a4;
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+    color: #eee;
+}
+
+.dateheader {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.MTTtable tr.totalrow {
+    font-weight: bold;
+    background: rgb(221, 221, 221);
+}
+
+.MTTtable td {
+    border: 0px;
+    border-bottom: 1px solid #8c94a4;
+    text-align: left;
+    padding: 0.5em 1.2em;
+    margin: 0px;
+    white-space: nowrap;
+}
+
+.domain-td {
+    max-width: 16em;
+    overflow: hidden;
+}
+
+.domainlink {
+    text-decoration: none;
+    color: #000;
+}
+
+.domainlink:hover {
+    text-decoration: underline;
+}
+
+.graphUL {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: block;
+    /*max-width of 301 = 10 hours */
+    max-width: 301px;
+}
+
+.graphLI {
+    background: #8c94a4;
+    height: 10px;
+    display: block;
+    float: left;
+    margin: 1px 0px 1px 0;
+    border-left: 1px solid #aaafb7;
+    /* width of 1px = 2 min, 30px = 1 hour */
+    width: 29px;
+}
+
+.showmore {
+    font-size: 10px;
+    cursor: pointer;
+}
+
+.showmore:hover {
+    text-decoration: underline;
+}
+.MTTtable td.emptytableTD {
+    max-width: 350px;
+    white-space: normal;
+    padding:12px 14px;
+    text-align: center;
+    color: rgb(119, 119, 119);
+}
+
+.smalltext {
+    font-size: 12px;
+}
+
+#rowPrefs {
+    margin-bottom: 550px;
+}
+
+#rowPrefs h1 {
+    margin-bottom: 30px;
+}
+
+#rowPrefs p {
+    font-size: 15px ;
+}
+
+#addonsManagerButton {
+    color: rgb(105, 112, 126);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#showDaysButton {
+    border: 1px solid grey;
+    background: rgb(238, 238, 238);
+    padding: 5px 15px;
+    border-radius: 7px;
+    margin: 30px auto;
+    color: rgb(105,112,126);
+    width: 260px
+}
+
+#showDaysButton:hover,
+#showDaysButton:active {
+    background: rgb(222, 222, 222);
+    cursor: pointer;
+}
+
+@media (max-width: 1110px) {
+    .MTTtable {
+        margin:30px auto;
+    }
+    .big-row {
+        display:block;
+    }
+    .graphUL {
+        max-width: none;
+    }
+}

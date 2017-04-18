@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: sans;
+        }
+        h4 {
+            margin-top: 2em;
+            margin-bottom: 0.6em;
+        }
+        p {
+            margin-top: 0.6em;
+            margin-bottom: 0.6em;
+        }
+        .notice {
+            color: green;
+        }
+        a {
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+  <form>
+    <fieldset>
+      <legend>Options</legend>
+      <p class="notice"><em>NOTE: Don't forget to click the "Save Changes" button below.</em></p>
+      <h4>Ticker (Button Badge)</h4>
+      <p>
+      <label><input type="radio" value="site" id="buttonBadgeSite" name="buttonBadgePref" checked="true">Show time spent at the current site today</label><br>
+      <label><input type="radio" value="total" id="buttonBadgeTotal" name="buttonBadgePref">Show total time spent on the web today</label>
+      </p>
+
+      <h4>Reminder Notifications</h4>
+      <p>Transient notifications that indicate the amount of time spent on the web so far today.</p>
+      <p>
+      <label><input type="radio" value="notificationsOn" id="notificationsOn" name="showRemindersPref" checked="true">On</label><br>
+      <label><input type="radio" value="notificationsOff" id="notificationsOff" name="showRemindersPref">Off</label>
+      </p>
+
+      <h4>Reminder Notification Rate (In Minutes)</h4>
+      <p>The number of minutes logged between each reminder notification.</p>
+      <p><input type="number" value="notificationsRate" id="notificationsRate" name="notificationsRate" /></p>
+
+      <h4>Exclude These Sites (White List)</h4>
+      <p>Enter a list of domains separated by commas to prevent those sites from being logged, and any time spent on them from being counted.
+      For example: "wordpress.org, addons.mozilla.org, www.ubuntu.com"  There is no need to include the "http://" or "https://" from
+      the URL, but you must include any subdomains (such as "www.") when they are part of the site's address.</p>
+      <p><input type="text" id="whitelist" name="whitelist"></p>
+
+      <h4>When a New Day Begins</h4>
+      <p>Midnight is where the day begins, but you can adjust that by some number of hours. Enter "0" for
+          midnight, "2" for 2:00 AM, "-1" for 11:00 PM, etc.  (For the night owls.)</p>
+      <p><input type="number" value="dayStartOffset" id="dayStartOffset" name="dayStartOffset" /></p>
+
+      <h4>Save Changes</h4>
+      <p><button type="submit">Save Changes</button></p>
+
+      <h4>Delete All Data</h4>
+      <p>This cannot be undone.</p>
+      <p><button id="deleteButton" type="delete">Delete All Data</button></p>
+    </fieldset>
+  </form>
+  <script src="options.js"></script>
+</body>
+</html>

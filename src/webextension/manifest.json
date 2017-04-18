@@ -1,0 +1,36 @@
+{
+  "manifest_version": 2,
+  "name": "Mind the Time",
+  "version": "2.0.0",
+  "description": "Keep track of how much time you spend on the web, and where you spend it. A ticker shows the time spent at the current site or total time spent on the web today. A summary page shows data for today and recent history.",
+  "homepage_url": "https://addons.mozilla.org/en-US/firefox/addon/mind-the-time/",
+  "icons": {
+    "32": "icons/hourglass-icon-32.png"
+  },
+  "options_ui": {
+    "page": "options/options.html"
+  },
+  "background": {
+    "scripts": [
+        "new-day.js",
+        "ticker-timer-modes.js",
+        "tracking-events.js",
+        "main.js",
+        "data-migration.js"
+    ]
+  },
+  "permissions": [
+    "tabs",
+    "storage",
+    "notifications",
+    "idle"
+    ],
+  "browser_action": {
+    "browser_style": true,
+    "default_icon": {
+        "32" : "icons/hourglass-icon-32.png"
+    },
+    "default_title": "Mind the Time",
+    "default_popup": "popup/popup.html"
+  }
+}

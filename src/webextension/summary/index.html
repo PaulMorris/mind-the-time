@@ -1,0 +1,101 @@
+<!--
+  This Source Code Form is subject to the terms of the Mozilla Public
+  License, v. 2.0. If a copy of the MPL was not distributed with this file,
+  You can obtain one at http://mozilla.org/MPL/2.0/.
+  -->
+<!-- the summary page html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="icon" type="image/png" href="hourglass-icon-32.png">
+    <meta charset="utf-8">
+    <title>Mind the Time</title>
+    <link href="index.css" media="screen" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="autoscroll.js"></script>
+  </head>
+  <body>
+    <div id="topnav">
+      <ul id="headerUL">
+        <li><a id="mindTheTimeNavLink">MIND THE TIME</a></li>
+        <li><a id="monthsNavLink">MONTHS</a></li>
+        <li><a id="weeksNavLink">WEEKS</a></li>
+        <li><a id="daysNavLink">DAYS</a></li>
+        <li><a id="optionsNavLink">PREFERENCES</a></li>
+        <li><a id="aboutNavLink" target="_blank" href="https://addons.mozilla.org/firefox/addon/mind-the-time/">ABOUT</a></li>
+        <li id="reloadLi"><a id="reloadButton">REFRESH</a></li>
+        <!-- for testing --><!-- <li><input name="New Day" type="button" value="New Day" style="width: 160px" class="button" id="newDayButton"></li> -->
+      </ul>
+    </div>
+    <div id="loadFailMessage">Hmmm... the data did not load, please reload the page.
+      <!-- <br/><br/><input type="button" class="button" id="didNotLoadReloadButton" value="Reload the Page" onClick="window.location.reload()"> -->
+    </div>
+    <div class="big-row" id="row0">
+      <div class="sum-box" id="box0"></div>
+      <div class="sum-box" id="box1"></div>
+    </div>
+    <div class="big-row" id="row1">
+      <div class="sum-box" id="box2"></div>
+      <div class="sum-box" id="box3"></div>
+    </div>
+    <div class="big-row" id="row2">
+      <div class="sum-box" id="box4"></div>
+    </div>
+    <div class="big-row, big-row-header" id="rowMonths">
+      <h1>MONTHS</h1>
+    </div>
+    <div class="big-row" id="row3">
+      <div class="sum-box" id="box5"></div>
+      <div class="sum-box" id="box6"></div>
+    </div>
+    <div class="big-row" id="row4">
+      <div class="sum-box" id="box7"></div>
+      <div class="sum-box" id="box8"></div>
+    </div>
+    <div class="big-row" id="row5">
+      <div class="sum-box" id="box9"></div>
+      <div class="sum-box" id="box10"></div>
+    </div>
+    <div class="big-row, big-row-header" id="rowWeeks">
+      <h1>WEEKS</h1>
+    </div>
+    <div class="big-row" id="row6">
+      <div class="sum-box" id="box11"></div>
+      <div class="sum-box" id="box12"></div>
+    </div>
+    <div class="big-row" id="row7">
+      <div class="sum-box" id="box13"></div>
+      <div class="sum-box" id="box14"></div>
+    </div>
+    <div class="big-row" id="row8">
+      <div class="sum-box" id="box15"></div>
+      <div class="sum-box" id="box16"></div>
+    </div>
+    <div class="big-row" id="row9">
+      <div class="sum-box" id="box17"></div>
+      <div class="sum-box" id="box18"></div>
+    </div>
+    <div class="big-row" id="row10">
+      <div class="sum-box" id="box19"></div>
+      <div class="sum-box" id="box20"></div>
+    </div>
+    <div class="big-row, big-row-header" id="rowDays">
+      <h1>DAYS</h1>
+    </div>
+    <div id="day-rows">
+      <div class="big-row" id="row11">
+        <div class="sum-box" id="box21"></div>
+        <div class="sum-box" id="box22"></div>
+      </div>
+    </div>
+    <div class="big-row, big-row-header" id="rowPrefs">
+      <h1>PREFERENCES</h1>
+      <p>To access preferences for Mind the Time:</p>
+      <!-- when webextensions can open 'about:' urls use this: <a id="addonsManagerButton">...</a> -->
+      <p>Open the <strong>Add-ons Manager</strong>.</p>
+      <p>Select <strong>Extensions</strong> in the menu on the left.</p>
+      <p>Find <strong>Mind the Time</strong> in the list.</p>
+      <p>Click the <strong>Preferences</strong> button.</p>
+    </div>
+    <script type="text/javascript" src="index.js"></script>
+  </body>
+</html>
