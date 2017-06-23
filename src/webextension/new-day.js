@@ -167,3 +167,12 @@ var make_new_day_state = (aStorage) => {
     gState = get_null_gState();
     return aStorage;
 };
+
+async function start_new_day() {
+    try {
+        let storage = await STORAGE.get();
+        return STORAGE.set(make_new_day_state(storage));
+    } catch (e) {
+        console.error(e);
+    }
+};

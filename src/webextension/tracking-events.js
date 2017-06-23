@@ -147,23 +147,6 @@ async function clock_on(aState, fromStorage, aUrl) {
     gState.clockOnTimeout = setTimeout(clock_on_timeout_function, ms);
 };
 
-async function maybe_new_day(aNextDayStartsAt) {
-    // just for logging purposes
-    let newDayIn = (aNextDayStartsAt - Date.now()) / 3600000;
-    console.log('maybe_new_day', newDayIn, 'hours until new day');
-
-    if (Date.now() > aNextDayStartsAt) {
-        try {
-            let storage = await STORAGE.get();
-            return STORAGE.set(make_new_day_state(storage));
-        } catch (e) {
-            console.error(e);
-        }
-    }
-    // return a resolved promise so we return a promise no matter what
-    return Promise.resolve(true);
-};
-
 async function get_current_url() {
     // returns a promise that resolves to the url of the active window/tab
     try {
@@ -176,11 +159,17 @@ async function get_current_url() {
 
 async function pre_clock_on_2(aUrl) {
     try {
-        let url = aUrl || await get_current_url();
-        let fromStorage = await STORAGE.get(["nextDayStartsAt", "oWhitelistArray", "totalSecs"]);
-        await maybe_new_day(fromStorage.nextDayStartsAt);
+        let url = aUrl || await get_current_url(),
+            fromStorage = await STORAGE.get(["nextDayStartsAt", "oWhitelistArray", "totalSecs"]);
+
+        console.log('hours until new day:', (aNextDayStartsAt - Date.now()) / 3600000);
+        if (Date.now() > fromStorage.nextDayStartsAt) {
+            await start_new_day();
+        }
         clock_on(gState, fromStorage, url);
-    } catch (e) { console.error(e); }
+    } catch (e) {
+        console.error(e);
+    }
 };
 
 var pre_clock_on = (aUrl) => {

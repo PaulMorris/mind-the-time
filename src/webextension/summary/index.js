@@ -555,7 +555,9 @@ async function start_load () {
             browser.storage.local.get()
         ]);
         gBackground = bg;
-        await gBackground.maybe_new_day(storage.nextDayStartsAt);
+        if (Date.now() > storage.nextDayStartsAt) {
+            await gBackground.start_new_day();
+        }
         load_summary(storage);
         return true;
     } catch (e) {
