@@ -22,8 +22,9 @@ var saveOptions = (e) => {
     e.preventDefault();
 }
 
-var restoreOptions = () => {
-    STORAGE.get(gBackground.OPTIONS).then((result) => {
+async function restoreOptions() {
+    try {
+        let result = await STORAGE.get(gBackground.OPTIONS);
         document.querySelector("#buttonBadgeSite").checked = !result.oButtonBadgeTotal || true;
         document.querySelector("#buttonBadgeTotal").checked = result.oButtonBadgeTotal || false;
         document.querySelector("#notificationsOff").checked = !result.oNotificationsOn || true;
@@ -31,7 +32,9 @@ var restoreOptions = () => {
         document.querySelector("#notificationsRate")["value"] = result.oNotificationsRate.toString() || 60;
         document.querySelector("#dayStartOffset")["value"] = result.oDayStartOffset.toString() || 4;
         document.querySelector("#whitelist")["value"] = result.oWhitelistArray.join(', ') || "";
-    });
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', restoreOptions);

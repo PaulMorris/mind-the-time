@@ -65,8 +65,9 @@ var set_listeners_for_timer_mode = (mode) => {
     }
 };
 
-var set_ticker_update_function = (mode) => {
-    STORAGE.get("oButtonBadgeTotal").then(result => {
+async function set_ticker_update_function(mode) {
+    try {
+        let result = await STORAGE.get('oButtonBadgeTotal');
         if (mode === 'O') {
             update_ticker = () => null;
         } else if (mode === 'B' || result.oButtonBadgeTotal) {
@@ -74,7 +75,9 @@ var set_ticker_update_function = (mode) => {
         } else {
             update_ticker = update_ticker_default;
         }
-    }).catch(e => console.error(e));
+    } catch (e) {
+        console.error(e);
+    }
 };
 
 var set_badge_for_timer_mode = (mode) => {

@@ -246,24 +246,26 @@ var make_empty_table = (header, contentText) => {
     return tab;
 };
 
+async function handle_days_button_click() {
+    try {
+        let result = await browser.storage.local.get('days'),
+            node = document.getElementById("showDaysButton"),
+            days_partB = result.days.slice(8);
+
+        node.parentNode.removeChild(node);
+        add_day_big_rows(days_partB.length, 15, 29);
+        add_day_tables(days_partB, 15, 29);
+    } catch (e) {
+        console.error(e);
+    }
+};
+
 var make_more_days_button = () => {
     let dayButton = document.createElement('p'),
         dayButtonText = document.createTextNode( "Show All Day Summaries" );
     dayButton.appendChild(dayButtonText);
     dayButton.setAttribute('id', 'showDaysButton');
-
-    dayButton.addEventListener("click", () => {
-        browser.storage.local.get('days').then((result) => {
-
-            let node = document.getElementById("showDaysButton"),
-                days_partB = result.days.slice(8);
-
-            node.parentNode.removeChild(node);
-            add_day_big_rows(days_partB.length, 15, 29);
-            add_day_tables(days_partB, 15, 29);
-        });
-    }, false);
-
+    dayButton.addEventListener("click", handle_days_button_click, false);
     return dayButton;
 };
 
@@ -517,16 +519,19 @@ var load_the_rest = (storage) => {
 // BUTTONS
 
 // reload button handler
-document.getElementById("reloadButton").addEventListener("click", () => {
-    start_load(gBackground).then(() => {
-        // flicker the current day so user knows it was updated
+async function handle_reload_click() {
+    try {
+        await start_load(gBackground);
+        // flicker the current day so the user knows it was updated
         document.getElementById("box0").style.visibility = "hidden";
         setTimeout(() => { document.getElementById("box0").style.visibility = "visible"; }, 80);
-    }).catch(e => {
+    } catch (e) {
         console.error(e);
         window.location.reload();
-    });
-}, false);
+    }
+};
+
+document.getElementById("reloadButton").addEventListener("click", handle_reload_click, false);
 
 // addons manager button handler
 // about: urls are not currently supported by Firefox webextensions
@@ -543,11 +548,14 @@ document.getElementById("addonsManagerButton").addEventListener("click", () => {
 // functions and global variables.
 var gBackground;
 
-async function start_load (bg) {
+async function start_load () {
     try {
+        let [bg, storage] = await Promise.all([
+            browser.runtime.getBackgroundPage(),
+            browser.storage.local.get()
+        ]);
         gBackground = bg;
-        let storage = await browser.storage.local.get();
-        await bg.maybe_new_day(storage.nextDayStartsAt);
+        await gBackground.maybe_new_day(storage.nextDayStartsAt);
         load_summary(storage);
         return true;
     } catch (e) {
@@ -555,5 +563,4 @@ async function start_load (bg) {
     }
 };
 
-// initiate data loading
-browser.runtime.getBackgroundPage().then(start_load);
+start_load();
