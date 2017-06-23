@@ -129,14 +129,15 @@ var sanitize_whitelist = oldWhitelistString => {
     return [...whitelistSet];
 };
 
-var get_summary_tab = () => {
-    let url = browser.extension.getURL("summary/index.html");
-    return browser.tabs.query({})
-        .then(tabs => {
-            let summaryTab = tabs.filter(t => t.url === url);
-            return summaryTab.length > 0 ? summaryTab[0] : false;
-        })
-        .catch(LOG_ERROR);
+async function get_tab_by_url(aUrl) {
+    try {
+        let tabs = await browser.tabs.query({}),
+            filteredTabs = tabs.filter(t => t.url === aUrl);
+        return filteredTabs[0] || false;
+    } catch (e) {
+        console.error(e);
+        return false;
+    }
 };
 
 async function delete_all_data() {
@@ -148,7 +149,8 @@ async function delete_all_data() {
         let merged = Object.assign(savedData, get_storage_initializations(savedData));
         await STORAGE.set(merged);
         // reload the summary page if it is open
-        let summaryTab = await get_summary_tab();
+        let summaryUrl = browser.extension.getURL("summary/index.html"),
+            summaryTab = await get_tab_by_url(summaryUrl);
         if (summaryTab) {
             browser.tabs.reload(summaryTab.id, {bypassCache: true});
         }
