@@ -46,9 +46,7 @@ const ONE_DAY_MS = 86400000,
         "oNotificationsOn",
         "oNotificationsRate",
         "oWhitelistArray"
-    ],
-    // used with promises
-    LOG_ERROR = e => console.error(e);
+    ];
 
 var gState = {};
 

@@ -74,7 +74,7 @@ var set_ticker_update_function = (mode) => {
         } else {
             update_ticker = update_ticker_default;
         }
-    }).catch(LOG_ERROR);
+    }).catch(e => console.error(e));
 };
 
 var set_badge_for_timer_mode = (mode) => {

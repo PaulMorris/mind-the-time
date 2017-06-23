@@ -61,7 +61,7 @@ async function log_seconds(aDomain, aSeconds) {
             let next = get_next_alert_at(result.notificationsRate, newTotalSecs);
             newData.nextAlertAt = next;
     }
-    STORAGE.set(newData).catch(LOG_ERROR);
+    STORAGE.set(newData).catch(e => console.error(e));
 };
 
 // stops timing and adds elapsed time to totals
@@ -147,7 +147,7 @@ var maybe_new_day = (aNextDayStartsAt) => {
     console.log('maybe_new_day', newDayIn, 'hours until new day');
 
     if (Date.now() > aNextDayStartsAt) {
-        return STORAGE.get().then((s) => STORAGE.set(make_new_day_state(s))).catch(LOG_ERROR);
+        return STORAGE.get().then((s) => STORAGE.set(make_new_day_state(s))).catch(e => console.error(e));
     } else {
         // return a resolved promise so we return a promise no matter what
         return Promise.resolve(true);
@@ -231,7 +231,7 @@ var idle_handler = (state) => {
                 pre_clock_on();
             }
         }
-    }).catch(LOG_ERROR);
+    }).catch(e => console.error(e));
     // else state is 'idle' or 'locked' and we just clock off and do no more
 };
 
@@ -255,7 +255,7 @@ var handle_day_start_offset_change = (aDayStartOffset) => {
         dayNum = get_day_number(date),
         next = get_next_day_starts_at(dayNum, aDayStartOffset);
 
-    STORAGE.set({ nextDayStartsAt: next }).catch(LOG_ERROR);
+    STORAGE.set({ nextDayStartsAt: next }).catch(e => console.error(e));
 };
 
 var handle_notifications_change = () => {
@@ -264,7 +264,7 @@ var handle_notifications_change = () => {
             let next = get_next_alert_at(result.oNotificationsRate, result.totalSecs);
             return STORAGE.set({nextAlertAt: next});
         })
-        .catch(LOG_ERROR);
+        .catch(e => console.error(e));
 };
 
 // Even when a new value is the same as the old value it will fire this listener.
