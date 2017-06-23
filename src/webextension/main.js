@@ -139,7 +139,7 @@ var get_summary_tab = () => {
         .catch(LOG_ERROR);
 };
 
-async function deleteAllData() {
+async function delete_all_data() {
     gState = get_null_gState();
     update_ticker(0);
     try {

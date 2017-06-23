@@ -36,4 +36,4 @@ var restoreOptions = () => {
 
 document.addEventListener('DOMContentLoaded', restoreOptions);
 document.querySelector("form").addEventListener("submit", saveOptions);
-document.querySelector("#deleteButton").addEventListener("click", gBackground.deleteAllData);
+document.querySelector("#deleteButton").addEventListener("click", gBackground.delete_all_data);
