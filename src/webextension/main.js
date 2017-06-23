@@ -146,8 +146,7 @@ async function delete_all_data() {
     try {
         let savedData = await STORAGE.get(OPTIONS);
         await STORAGE.clear();
-        let merged = Object.assign(savedData, get_storage_initializations(savedData));
-        await STORAGE.set(merged);
+        await STORAGE.set(get_initial_storage(savedData));
         // reload the summary page if it is open
         let summaryUrl = browser.extension.getURL("summary/index.html"),
             summaryTab = await get_tab_by_url(summaryUrl);
@@ -228,13 +227,12 @@ var get_empty_summary_object = () => {
     return result;
 };
 
-// called on installation and app/add-on startup, when deleting all data, etc.
-// takes aStorage object and returns newValues object that has all initial values
-// that weren't already set in aStorage object.  STORAGE can then be set with newValues.
+// Called on installation and when deleting all data.
+// Takes aStorage object and creates a newStorage object by adding any values
+// missing from aStorage. Returns newStorage. STORAGE can then be set with newStorage.
 // Called without an argument it returns a complete initial storage object.
-var get_storage_initializations = (aStorage = {}) => {
-    let newValues = {},
-        simpleDefaults = {
+var get_initial_storage = (aStorage = {}) => {
+    let simpleDefaults = {
             oButtonBadgeTotal: false,
             oNotificationsOn: false,
             oNotificationsRate: 60,
@@ -244,52 +242,35 @@ var get_storage_initializations = (aStorage = {}) => {
             timerMode: "D",
             totalSecs: 0,
             days: []
-        };
-
-    Object.keys(simpleDefaults).forEach(key => {
-        if (is_null_or_undefined(aStorage[key])) {
-            newValues[key] = simpleDefaults[key];
-        }
-    });
-
-    // make sure that timerMode will always be (re)set, that will cause the storage
-    // change listeners to fire, and then other listeners will be set up based on
-    // the timer mode.
-    if (!newValues.timerMode) {
-        newValues.timerMode = aStorage.timerMode;
-    }
-
-    // just to simplify life
-    let tempStorage = Object.assign(aStorage, newValues);
+        },
+        newStorage = Object.assign(simpleDefaults, aStorage);
 
     if (is_null_or_undefined(aStorage.nextAlertAt)) {
-        newValues.nextAlertAt = get_next_alert_at(tempStorage.oNotificationsRate, tempStorage.totalSecs);
+        newStorage.nextAlertAt = get_next_alert_at(newStorage.oNotificationsRate, newStorage.totalSecs);
     }
 
     let dayNum;
     if (!aStorage.today) {
-        newValues.today = get_empty_today_object(tempStorage.oDayStartOffset);
-        dayNum = newValues.today.dayNum;
+        newStorage.today = get_empty_today_object(newStorage.oDayStartOffset);
+        dayNum = newStorage.today.dayNum;
     } else {
         dayNum = aStorage.today.dayNum;
     }
-
-    newValues.nextDayStartsAt = get_next_day_starts_at(dayNum, tempStorage.oDayStartOffset);
+    newStorage.nextDayStartsAt = get_next_day_starts_at(dayNum, newStorage.oDayStartOffset);
 
     if (!aStorage.past7daySum) {
-        newValues.past7daySum = get_empty_summary_object();
+        newStorage.past7daySum = get_empty_summary_object();
     }
     if (!aStorage.weekSums) {
-        newValues.weekSums = new Array(10).fill(get_empty_summary_object());
+        newStorage.weekSums = new Array(10).fill(get_empty_summary_object());
     }
     if (!aStorage.monthSums) {
-        newValues.monthSums = new Array(6).fill(get_empty_month_summary_object());
+        newStorage.monthSums = new Array(6).fill(get_empty_month_summary_object());
     }
-    return newValues;
+    return newStorage;
 };
 
-var misc_init = () => {
-    console.log("INITIALIZE");
+var initialize_state = () => {
     gState = get_null_gState();
     browser.idle.setDetectionInterval(IDLE_TIMEOUT_SECS);
 };
