@@ -38,19 +38,8 @@ document.getElementById("O").addEventListener('click', change_mode.bind(null, 'O
 async function update_ticker_div() {
     try {
         let gBackground = await browser.runtime.getBackgroundPage(),
-            url = await gBackground.get_current_url(),
-            domain = new URL(url).host,
-            fromStorage = await browser.storage.local.get([domain, 'totalSecs', 'timerMode']),
             tickerDiv = document.getElementById("tickerDiv");
-
-        if (fromStorage.timerMode === 'B') {
-            tickerDiv.textContent = gBackground.format_time(fromStorage.totalSecs);
-        } else {
-            // \u00a0 is unicode for a space
-            tickerDiv.textContent = gBackground.format_time(fromStorage[domain] || 0) +
-                "\u00a0\u00a0/\u00a0\u00a0" +
-                gBackground.format_time(fromStorage.totalSecs);
-        }
+        tickerDiv.textContent = await gBackground.get_popup_ticker();
     } catch (e) {
         console.error(e);
     }

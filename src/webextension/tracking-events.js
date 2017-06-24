@@ -279,6 +279,15 @@ async function handle_notifications_change() {
     }
 };
 
+var handle_timer_mode_change = (mode) => {
+    maybe_clock_off(gState);
+    set_listeners_for_timer_mode(mode);
+    set_ticker_update_function(mode);
+    set_popup_ticker_function(mode);
+    set_badge_for_timer_mode(mode);
+    pre_clock_on();
+};
+
 // Even when a new value is the same as the old value it will fire this listener.
 // Note that options are typically all changed at once (but maybe not actually
 // changed) when save button is clicked.
@@ -288,13 +297,7 @@ browser.storage.onChanged.addListener((changes, area) => {
     // when we clear storage for delete all data everything is undefined so check for that
     // this is involved in initialization for the timer mode on app install / restart
     if (changes.timerMode && changes.timerMode.newValue) {
-        maybe_clock_off(gState);
-        // set_timer_mode(changes.timerMode.newValue);
-        let mode = changes.timerMode.newValue;
-        set_listeners_for_timer_mode(mode);
-        set_ticker_update_function(mode);
-        set_badge_for_timer_mode(mode);
-        pre_clock_on();
+        handle_timer_mode_change(changes.timerMode.newValue);
     }
     if ((changes.oNotificationsOn || changes.oNotificationsRate) &&
        (changes.oNotificationsOn.newValue || changes.oNotificationsRate.newValue)) {

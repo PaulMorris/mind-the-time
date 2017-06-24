@@ -74,6 +74,34 @@ async function set_ticker_update_function(mode) {
     }
 };
 
+async function get_popup_ticker_default() {
+    try {
+        let url = await get_current_url(),
+            domain = new URL(url).host,
+            fromStorage = await STORAGE.get([domain, 'totalSecs']);
+        return format_time(fromStorage[domain] || 0) +
+            "\u00a0\u00a0/\u00a0\u00a0" +
+            format_time(fromStorage.totalSecs);
+    } catch (e) {
+        console.error(e);
+    }
+};
+
+async function get_popup_ticker_total_only() {
+    try {
+        let fromStorage = await STORAGE.get('totalSecs');
+        return format_time(fromStorage.totalSecs);
+    } catch (e) {
+        console.error(e);
+    }
+};
+
+var get_popup_ticker;
+
+var set_popup_ticker_function = (mode) => {
+    get_popup_ticker = mode === 'B' ? get_popup_ticker_total_only : get_popup_ticker_default;
+};
+
 var set_badge_for_timer_mode = (mode) => {
     if (mode === 'O') {
         browser.browserAction.setBadgeText({ text: "" });
