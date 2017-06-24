@@ -12,5 +12,8 @@
     "firefox": ">=52.0a1"
   },
   "license": "MPL-2.0",
-  "hasEmbeddedWebExtension": true
+  "hasEmbeddedWebExtension": true,
+  "permissions": {
+      "multiprocess": true
+  }
 }
