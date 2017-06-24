@@ -34,26 +34,22 @@ document.getElementById("G").addEventListener('click', change_mode.bind(null, 'G
 document.getElementById("B").addEventListener('click', change_mode.bind(null, 'B'));
 document.getElementById("O").addEventListener('click', change_mode.bind(null, 'O'));
 
-var format_time = (time) => {
-    let absTime = Math.abs(time),
-        h = Math.floor(absTime / 3600),
-        m = Math.floor(absTime / 60) % 60;
-    return ((h < 1) ? "0:" : h + ":") +
-           ((m < 10) ? ((m < 1) ? "00" : "0" + m) : m);
-};
-
 // show the time in the popup panel
 async function update_ticker_div() {
     try {
-        let fromStorage = await browser.storage.local.get(['currentDomainSecs', 'totalSecs', 'timerMode']),
+        let gBackground = await browser.runtime.getBackgroundPage(),
+            url = await gBackground.get_current_url(),
+            domain = new URL(url).host,
+            fromStorage = await browser.storage.local.get([domain, 'totalSecs', 'timerMode']),
             tickerDiv = document.getElementById("tickerDiv");
-        if (fromStorage.timerMode !== 'B') {
-            // \u00a0 is unicode for a space
-            tickerDiv.textContent = format_time(fromStorage.currentDomainSecs) +
-                "\u00a0\u00a0/\u00a0\u00a0" +
-                format_time(fromStorage.totalSecs);
+
+        if (fromStorage.timerMode === 'B') {
+            tickerDiv.textContent = gBackground.format_time(fromStorage.totalSecs);
         } else {
-            tickerDiv.textContent = format_time(fromStorage.totalSecs);
+            // \u00a0 is unicode for a space
+            tickerDiv.textContent = gBackground.format_time(fromStorage[domain] || 0) +
+                "\u00a0\u00a0/\u00a0\u00a0" +
+                gBackground.format_time(fromStorage.totalSecs);
         }
     } catch (e) {
         console.error(e);

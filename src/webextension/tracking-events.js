@@ -38,11 +38,7 @@ async function log_seconds(aDomain, aSeconds) {
             currentSecs = oldSeconds + aSeconds,
             newTotalSecs = fromStorage.totalSecs += aSeconds,
 
-            // currentDomainSecs is stored for access by the button panel, that displays it
-            newData = {
-                totalSecs: newTotalSecs,
-                currentDomainSecs: currentSecs
-            };
+            newData = {totalSecs: newTotalSecs};
 
         newData[aDomain] = currentSecs;
 

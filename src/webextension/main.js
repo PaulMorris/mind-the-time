@@ -19,7 +19,6 @@ const ONE_DAY_MS = 86400000,
     STORAGE = browser.storage.local,
     // all keys in storage that aren't domains, used to extract domain data for today
     STORAGE_KEYS = [
-        "currentDomainSecs",
         "days",
         "monthSums",
         "nextAlertAt",
@@ -230,7 +229,6 @@ var get_initial_storage = (aStorage = {}) => {
             oNotificationsRate: 60,
             oDayStartOffset: 0,
             oWhitelistArray: [],
-            currentDomainSecs: 0,
             timerMode: "D",
             totalSecs: 0,
             days: []
