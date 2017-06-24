@@ -256,7 +256,6 @@ var inspector = (changes) => {
     return result;
 };
 
-// TODO: this should trigger a new day if the offset is moved into the past! Ugh!
 async function handle_day_start_offset_change(aDayStartOffset) {
     let dayStartOffsetMS = aDayStartOffset * ONE_HOUR_MS,
         date = new Date(Date.now() - dayStartOffsetMS),
@@ -264,6 +263,12 @@ async function handle_day_start_offset_change(aDayStartOffset) {
         next = get_next_day_starts_at(dayNum, aDayStartOffset);
     try {
         await STORAGE.set({nextDayStartsAt: next});
+
+        // Start a new day if the new day offset is moved into the past.
+        let fromStorage = await STORAGE.get('today');
+        if (dayNum > fromStorage.today.dayNum) {
+            await start_new_day();
+        }
     } catch (e) {
         console.error(e);
     }
