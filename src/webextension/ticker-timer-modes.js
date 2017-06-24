@@ -2,19 +2,6 @@
 
 "use strict";
 
-// updates the time shown in the ticker (aka button badge)
-var update_ticker_default = (secsHere, totalSecs) => {
-    let value = secsHere ? format_time_minimal(secsHere) : "0";
-    browser.browserAction.setBadgeText({ text: value });
-};
-
-var update_ticker_total_secs = (secsHere, totalSecs) => {
-    browser.browserAction.setBadgeText( {text: format_time_minimal(totalSecs) });
-};
-
-// use var so this is accessible from external scopes
-var update_ticker;
-
 // Updates the internal and external timer mode indications.
 // Called when user changes the mode and on initialization/startup.
 var set_listeners_for_timer_mode = (mode) => {
@@ -59,6 +46,18 @@ var set_listeners_for_timer_mode = (mode) => {
     }
 };
 
+// updates the time shown in the button badge ticker
+var update_ticker_default = (secsHere, totalSecs) => {
+    let value = secsHere ? format_time_minimal(secsHere) : "0";
+    browser.browserAction.setBadgeText({ text: value });
+};
+
+var update_ticker_total_secs = (secsHere, totalSecs) => {
+    browser.browserAction.setBadgeText( {text: format_time_minimal(totalSecs) });
+};
+
+var update_ticker;
+
 async function set_ticker_update_function(mode) {
     try {
         let fromStorage = await STORAGE.get('oButtonBadgeTotal');
@@ -74,6 +73,7 @@ async function set_ticker_update_function(mode) {
     }
 };
 
+// For updating the time shown in the popup ticker. Returns a promise/string.
 async function get_popup_ticker_default() {
     try {
         let url = await get_current_url(),
