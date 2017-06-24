@@ -7,7 +7,7 @@
 const STORAGE = browser.storage.local;
 var gBackground = browser.extension.getBackgroundPage();
 
-var saveOptions = (e) => {
+var save_options = (event) => {
     let whitelistElement = document.querySelector("#whitelist"),
         whitelistArray = gBackground.sanitize_whitelist(whitelistElement.value);
     whitelistElement["value"] = whitelistArray.join(', ') || "";
@@ -19,10 +19,13 @@ var saveOptions = (e) => {
         oDayStartOffset: parseInt(document.querySelector("#dayStartOffset").value) || 0,
         oWhitelistArray: whitelistArray
     });
-    e.preventDefault();
-}
+    event.preventDefault();
+};
 
-async function restoreOptions() {
+document.querySelector("form").addEventListener("submit", save_options);
+
+
+async function restore_options() {
     try {
         let fromStorage = await STORAGE.get(gBackground.OPTIONS);
         document.querySelector("#buttonBadgeSite").checked = !fromStorage.oButtonBadgeTotal || true;
@@ -35,8 +38,7 @@ async function restoreOptions() {
     } catch (e) {
         console.error(e);
     }
-}
+};
 
-document.addEventListener('DOMContentLoaded', restoreOptions);
-document.querySelector("form").addEventListener("submit", saveOptions);
+document.addEventListener('DOMContentLoaded', restore_options);
 document.querySelector("#deleteButton").addEventListener("click", gBackground.delete_all_data);

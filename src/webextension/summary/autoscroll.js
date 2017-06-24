@@ -1,5 +1,5 @@
 
-var currentYPosition = () => {
+var current_y_position = () => {
     if (self.pageYOffset)
         return self.pageYOffset;
     if (document.documentElement && document.documentElement.scrollTop)
@@ -9,7 +9,7 @@ var currentYPosition = () => {
     return 0;
 };
 
-var elmYPosition = (eID) => {
+var elem_y_position = (eID) => {
     var elm = document.getElementById(eID),
         y = elm.offsetTop,
         node = elm;
@@ -20,13 +20,13 @@ var elmYPosition = (eID) => {
     return y;
 };
 
-var scrollSome = (leapY) => {
+var scroll_some = (leapY) => {
     window.scrollTo(0, leapY);
 };
 
-var smoothScroll = (eID) => {
-    var startY = currentYPosition(),
-        stopY = elmYPosition(eID) - 35,
+var smooth_scroll = (eID) => {
+    var startY = current_y_position(),
+        stopY = elem_y_position(eID) - 35,
         distance = stopY > startY ? stopY - startY : startY - stopY;
     if (distance < 100) {
         scrollTo(0, stopY);
@@ -39,7 +39,7 @@ var smoothScroll = (eID) => {
         timer = 0;
     if (stopY > startY) {
         for (var i = startY; i < stopY; i += step) {
-            setTimeout(scrollSome, timer * speed, leapY);
+            setTimeout(scroll_some, timer * speed, leapY);
             leapY += step;
             if (leapY > stopY) leapY = stopY;
             timer += 1;
@@ -47,7 +47,7 @@ var smoothScroll = (eID) => {
         return;
     }
     for (var i = startY; i > stopY; i -= step) {
-        setTimeout(scrollSome, timer * speed, leapY);
+        setTimeout(scroll_some, timer * speed, leapY);
         leapY -= step;
         if (leapY < stopY) leapY = stopY;
         timer++;
@@ -55,4 +55,4 @@ var smoothScroll = (eID) => {
 };
 
 // listen for "show only 10 rows" and scroll to boxId, passed as event
-window.addEventListener('message', event => smoothScroll(event.data), false);
+window.addEventListener('message', event => smooth_scroll(event.data), false);

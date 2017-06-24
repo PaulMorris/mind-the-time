@@ -14,7 +14,7 @@ document.body.removeChild(document.getElementById("loadFailMessage"));
     ['weeksNavLink', 'rowWeeks'],
     ['daysNavLink', 'rowDays'],
     ['optionsNavLink', 'rowPrefs']].forEach((pair) => {
-    document.getElementById(pair[0]).addEventListener('click', smoothScroll.bind(null, pair[1]));
+    document.getElementById(pair[0]).addEventListener('click', smooth_scroll.bind(null, pair[1]));
 });
 
 var gTodayStamp;
