@@ -45,6 +45,9 @@ async function maybe_migrate_data() {
         }
     } catch (e) {
         console.error(e);
+        // for development, allows loading and testing webextension part
+        await STORAGE.set(get_initial_storage());
+        initialize_state();
     }
 };
 
