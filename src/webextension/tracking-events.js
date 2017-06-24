@@ -304,7 +304,9 @@ browser.storage.onChanged.addListener((changes, area) => {
        (changes.oNotificationsOn.newValue || changes.oNotificationsRate.newValue)) {
         handle_notifications_change();
     }
-    if (changes.oDayStartOffset && changes.oDayStartOffset.newValue &&
+    if (changes.oDayStartOffset &&
+        // The newValue can be 0 (a JS falsy value).
+        !is_null_or_undefined(changes.oDayStartOffset.newValue) &&
         changes.oDayStartOffset.newValue !== changes.oDayStartOffset.oldValue) {
         handle_day_start_offset_change(changes.oDayStartOffset.newValue);
     }
