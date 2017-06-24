@@ -29,16 +29,16 @@ async function show_notification(minutes) {
 async function log_seconds(aDomain, aSeconds) {
     console.log('logging ', aSeconds, "seconds at", aDomain);
     try {
-        let result = await STORAGE.get([
+        let fromStorage = await STORAGE.get([
                 "totalSecs",
                 "oNotificationsOn",
                 "oNotificationsRate",
                 "nextAlertAt",
                 aDomain
             ]),
-            oldSeconds = result[aDomain] || 0,
+            oldSeconds = fromStorage[aDomain] || 0,
             currentSecs = oldSeconds + aSeconds,
-            newTotalSecs = result.totalSecs += aSeconds,
+            newTotalSecs = fromStorage.totalSecs += aSeconds,
 
             // currentDomainSecs is stored for access by the button panel, that displays it
             newData = {
@@ -49,16 +49,16 @@ async function log_seconds(aDomain, aSeconds) {
         newData[aDomain] = currentSecs;
 
         // show a notification?
-        if (result.oNotificationsOn &&
-            result.oNotificationsRate > 0 &&
-            newTotalSecs >= result.nextAlertAt) {
+        if (fromStorage.oNotificationsOn &&
+            fromStorage.oNotificationsRate > 0 &&
+            newTotalSecs >= fromStorage.nextAlertAt) {
                 // somehow we were getting duplicate notifications, so we prevent that
                 let minutes = format_time(newTotalSecs);
                 if (minutes !== gState.notificationsMinutes) {
                     gState.notificationsMinutes = minutes;
                     show_notification(minutes);
                 }
-                let next = get_next_alert_at(result.notificationsRate, newTotalSecs);
+                let next = get_next_alert_at(fromStorage.notificationsRate, newTotalSecs);
                 newData.nextAlertAt = next;
         }
 
@@ -276,8 +276,8 @@ async function handle_day_start_offset_change(aDayStartOffset) {
 
 async function handle_notifications_change() {
     try {
-        let result = await STORAGE.get(["oNotificationsRate", "totalSecs"]),
-            next = get_next_alert_at(result.oNotificationsRate, result.totalSecs);
+        let fromStorage = await STORAGE.get(["oNotificationsRate", "totalSecs"]),
+            next = get_next_alert_at(fromStorage.oNotificationsRate, fromStorage.totalSecs);
         await STORAGE.set({nextAlertAt: next});
     } catch (e) {
         console.error(e);

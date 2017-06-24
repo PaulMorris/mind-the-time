@@ -248,9 +248,9 @@ var make_empty_table = (header, contentText) => {
 
 async function handle_days_button_click() {
     try {
-        let result = await browser.storage.local.get('days'),
+        let fromStorage = await browser.storage.local.get('days'),
             node = document.getElementById("showDaysButton"),
-            days_partB = result.days.slice(8);
+            days_partB = fromStorage.days.slice(8);
 
         node.parentNode.removeChild(node);
         add_day_big_rows(days_partB.length, 15, 29);

@@ -24,14 +24,14 @@ var saveOptions = (e) => {
 
 async function restoreOptions() {
     try {
-        let result = await STORAGE.get(gBackground.OPTIONS);
-        document.querySelector("#buttonBadgeSite").checked = !result.oButtonBadgeTotal || true;
-        document.querySelector("#buttonBadgeTotal").checked = result.oButtonBadgeTotal || false;
-        document.querySelector("#notificationsOff").checked = !result.oNotificationsOn || true;
-        document.querySelector("#notificationsOn").checked = result.oNotificationsOn || false;
-        document.querySelector("#notificationsRate")["value"] = result.oNotificationsRate.toString() || 60;
-        document.querySelector("#dayStartOffset")["value"] = result.oDayStartOffset.toString() || 4;
-        document.querySelector("#whitelist")["value"] = result.oWhitelistArray.join(', ') || "";
+        let fromStorage = await STORAGE.get(gBackground.OPTIONS);
+        document.querySelector("#buttonBadgeSite").checked = !fromStorage.oButtonBadgeTotal || true;
+        document.querySelector("#buttonBadgeTotal").checked = fromStorage.oButtonBadgeTotal || false;
+        document.querySelector("#notificationsOff").checked = !fromStorage.oNotificationsOn || true;
+        document.querySelector("#notificationsOn").checked = fromStorage.oNotificationsOn || false;
+        document.querySelector("#notificationsRate")["value"] = fromStorage.oNotificationsRate.toString() || 60;
+        document.querySelector("#dayStartOffset")["value"] = fromStorage.oDayStartOffset.toString() || 4;
+        document.querySelector("#whitelist")["value"] = fromStorage.oWhitelistArray.join(', ') || "";
     } catch (e) {
         console.error(e);
     }

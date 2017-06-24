@@ -43,15 +43,15 @@ var format_time = (time) => {
 // show the time in the popup panel
 async function update_ticker_div() {
     try {
-        let result = await browser.storage.local.get(['currentDomainSecs', 'totalSecs', 'timerMode']),
+        let fromStorage = await browser.storage.local.get(['currentDomainSecs', 'totalSecs', 'timerMode']),
             tickerDiv = document.getElementById("tickerDiv");
-        if (result.timerMode !== 'B') {
+        if (fromStorage.timerMode !== 'B') {
             // \u00a0 is unicode for a space
-            tickerDiv.textContent = format_time(result.currentDomainSecs) +
+            tickerDiv.textContent = format_time(fromStorage.currentDomainSecs) +
                 "\u00a0\u00a0/\u00a0\u00a0" +
-                format_time(result.totalSecs);
+                format_time(fromStorage.totalSecs);
         } else {
-            tickerDiv.textContent = format_time(result.totalSecs);
+            tickerDiv.textContent = format_time(fromStorage.totalSecs);
         }
     } catch (e) {
         console.error(e);

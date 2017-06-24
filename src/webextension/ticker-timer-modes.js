@@ -67,10 +67,10 @@ var set_listeners_for_timer_mode = (mode) => {
 
 async function set_ticker_update_function(mode) {
     try {
-        let result = await STORAGE.get('oButtonBadgeTotal');
+        let fromStorage = await STORAGE.get('oButtonBadgeTotal');
         if (mode === 'O') {
             update_ticker = () => null;
-        } else if (mode === 'B' || result.oButtonBadgeTotal) {
+        } else if (mode === 'B' || fromStorage.oButtonBadgeTotal) {
             update_ticker = update_ticker_total_secs;
         } else {
             update_ticker = update_ticker_default;
