@@ -242,6 +242,7 @@ async function idle_handler(aState) {
 // STORAGE CHANGE LISTENER
 
 // For logging of storage changes, just show the new values.
+/*
 var storage_change_inspector = (changes) => {
     let keys = Object.keys(changes);
     let result = {};
@@ -250,6 +251,7 @@ var storage_change_inspector = (changes) => {
     }
     return result;
 };
+*/
 
 async function handle_day_start_offset_change(aDayStartOffset) {
     let dayStartOffsetMS = aDayStartOffset * ONE_HOUR_MS,
