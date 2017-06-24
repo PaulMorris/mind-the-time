@@ -100,7 +100,7 @@ var make_day_summary_row = (boxID, c, tsecs, dayItem) => {
 var make_domain_row = (boxID, c, tsecs, dmnsItem, rowsShown) => {
     let domainNode;
 
-    // lowercase version introduced with first webextension version
+    // TODO: lowercase version introduced with first webextension version
     // eventually we should drop the uppercase version once it is out of
     // users data
     if (dmnsItem[0] === "o3xr2485dmmdi78177v7c33wtu7315.net" ||
@@ -332,8 +332,6 @@ var add_day_tables = (days, rowIdNum, boxIdNum) => {
 // LOADING DATA
 
 var load_summary = (aStorage) => {
-    console.log("load_summary");
-
     let today = aStorage.today,
         domainData = gBackground.extract_domain_data(aStorage),
         headerText = "Today, " + today.headerText;
@@ -357,8 +355,6 @@ var load_summary = (aStorage) => {
 // first load only data for previous day, current week, and previous week
 
 var load_the_rest = (storage) => {
-    console.log('load_the_rest', storage);
-
     // clear previous day and all non-day boxes, box1 to box20
     let n;
     for (n = 20; n > 0; n -= 1) {
@@ -532,14 +528,6 @@ async function handle_reload_click() {
 };
 
 document.getElementById("reloadButton").addEventListener("click", handle_reload_click, false);
-
-// addons manager button handler
-// about: urls are not currently supported by Firefox webextensions
-/*
-document.getElementById("addonsManagerButton").addEventListener("click", () => {
-    browser.tabs.create({url: "about:addons"});
-}, false);
-*/
 
 
 // INITIALIZATION

@@ -2,8 +2,6 @@
 
 "use strict";
 
-// auxiliary functions
-
 var get_next_alert_at = (aRateInMins, aTotalSecs) => {
     let rateSecs = aRateInMins * 60;
     return aTotalSecs + (rateSecs - (aTotalSecs % rateSecs));
@@ -27,7 +25,7 @@ async function show_notification(minutes) {
 };
 
 async function log_seconds(aDomain, aSeconds) {
-    console.log('logging ', aSeconds, "seconds at", aDomain);
+    // console.log('logging ', aSeconds, "seconds at", aDomain);
     try {
         let fromStorage = await STORAGE.get([
                 "totalSecs",
@@ -72,7 +70,7 @@ async function log_seconds(aDomain, aSeconds) {
 // stops timing and adds elapsed time to totals
 var maybe_clock_off = (aState) => {
     if (aState.startStamp) {
-        console.log('clock off');
+        // console.log('clock off');
         let startStamp = aState.startStamp;
 
         // null timestamp means don't clock off again until after clock on
@@ -113,7 +111,7 @@ var get_clock_on_timeout_MS = (aTotalSecs) => {
 
 // handle request to start timing for a site
 async function clock_on(aState, fromStorage, aUrl) {
-    console.log('clock_on', aUrl);
+    // console.log('clock_on', aUrl);
 
     // check if the domain is clockable and update ticker
     let domain = get_clockable_domain(aState.timingDomain, fromStorage.oWhitelistArray, aUrl);
@@ -162,7 +160,7 @@ async function pre_clock_on_2(aUrl) {
         let url = aUrl || await get_current_url(),
             fromStorage = await STORAGE.get(["nextDayStartsAt", "oWhitelistArray", "totalSecs"]);
 
-        console.log('hours until new day:', (aNextDayStartsAt - Date.now()) / 3600000);
+        // console.log('hours until new day:', (aNextDayStartsAt - Date.now()) / 3600000);
         if (Date.now() > fromStorage.nextDayStartsAt) {
             await start_new_day();
         }
@@ -177,6 +175,7 @@ var pre_clock_on = (aUrl) => {
     clearTimeout(gState.preClockOnTimeout);
     gState.preClockOnTimeout = setTimeout(pre_clock_on_2.bind(null, aUrl), 50);
 };
+
 
 // EVENT HANDLING
 
@@ -205,12 +204,12 @@ var tabs_activated_updated_blue_mode = () => {
 };
 
 var tabs_on_removed = (tabId, removeInfo) => {
-    console.log('tabs.onRemoved', removeInfo);
+    // console.log('tabs.onRemoved', removeInfo);
     maybe_clock_off(gState);
 };
 
 var windows_on_focus_changed = (windowId) => {
-    console.log('windows.onFocusChanged', windowId);
+    // console.log('windows.onFocusChanged', windowId);
     maybe_clock_off(gState);
     if (windowId !== -1) {
         pre_clock_on();
@@ -228,7 +227,7 @@ var clock_on_timeout_function = () => {
 // when user is idle for IDLE_TIMEOUT_SECS we clock off, then when user becomes
 // active again we clock back on
 async function idle_handler(aState) {
-    console.log('idle state:', aState);
+    // console.log('idle state:', aState);
     try {
         let windowInfo = await browser.windows.getLastFocused();
         if (windowInfo.focused) {
@@ -246,8 +245,8 @@ async function idle_handler(aState) {
 
 // STORAGE CHANGE LISTENER
 
-// for logging of storage changes, just show the new values.
-var inspector = (changes) => {
+// For logging of storage changes, just show the new values.
+var storage_change_inspector = (changes) => {
     let keys = Object.keys(changes);
     let result = {};
     for (let key of keys) {
@@ -285,9 +284,10 @@ async function handle_notifications_change() {
 };
 
 // Even when a new value is the same as the old value it will fire this listener.
-// Note that typically the options are all 'changed' at once with save button.
+// Note that options are typically all changed at once (but maybe not actually
+// changed) when save button is clicked.
 browser.storage.onChanged.addListener((changes, area) => {
-    console.log('storage changed', inspector(changes));
+    // console.log('storage changed', storage_change_inspector(changes));
 
     // when we clear storage for delete all data everything is undefined so check for that
     // this is involved in initialization for the timer mode on app install / restart

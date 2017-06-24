@@ -2,9 +2,6 @@
 
 "use strict";
 
-// set button badge color
-// browser.browserAction.setBadgeBackgroundColor({ color: '#404040' });
-
 // updates the time shown in the ticker (aka button badge)
 var update_ticker_default = (secsHere, totalSecs) => {
     let value = secsHere ? format_time_minimal(secsHere) : "0";
@@ -18,11 +15,8 @@ var update_ticker_total_secs = (secsHere, totalSecs) => {
 // use var so this is accessible from external scopes
 var update_ticker;
 
-
-// TIMER MODE
-
-// updates the internal and external timer mode indications
-// called when user changes the mode and on initialization/startup
+// Updates the internal and external timer mode indications.
+// Called when user changes the mode and on initialization/startup.
 var set_listeners_for_timer_mode = (mode) => {
     // O: timer off
     // D: default - normal mode

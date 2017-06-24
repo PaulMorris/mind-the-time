@@ -105,8 +105,6 @@ var make_past7days_summ = (num, days) => {
 };
 
 var make_new_day_state = (aStorage) => {
-    console.log('make_new_day_state', aStorage);
-
     // We want the day to possibly change at other times than midnight,
     // so subtract offset in milliseconds from current UTC time.
     let date = new Date(Date.now() - (aStorage.oDayStartOffset * ONE_HOUR_MS)),

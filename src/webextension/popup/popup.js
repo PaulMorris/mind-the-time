@@ -5,6 +5,8 @@
 async function handle_summary_button_click() {
     try {
         let url = browser.extension.getURL("summary/index.html"),
+            // we have to query then filter because we can't query for
+            // non-standard add-on url directly
             tabs = await browser.tabs.query({}),
             summaryTab = tabs.filter((t) => t.url === url);
 
@@ -23,14 +25,14 @@ async function handle_summary_button_click() {
 document.getElementById("summaryButton").addEventListener('click', handle_summary_button_click);
 
 var change_mode = (mode) => {
-    browser.storage.local.set({ timerMode: mode });
+    browser.storage.local.set({timerMode: mode});
     window.close();
 };
 
-document.getElementById("D").addEventListener('click', (e) => { change_mode('D'); });
-document.getElementById("G").addEventListener('click', (e) => { change_mode('G'); });
-document.getElementById("B").addEventListener('click', (e) => { change_mode('B'); });
-document.getElementById("O").addEventListener('click', (e) => { change_mode('O'); });
+document.getElementById("D").addEventListener('click', change_mode.bind(null, 'D'));
+document.getElementById("G").addEventListener('click', change_mode.bind(null, 'G'));
+document.getElementById("B").addEventListener('click', change_mode.bind(null, 'B'));
+document.getElementById("O").addEventListener('click', change_mode.bind(null, 'O'));
 
 var format_time = (time) => {
     let absTime = Math.abs(time),

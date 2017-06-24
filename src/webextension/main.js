@@ -6,11 +6,6 @@
 
 "use strict";
 
-// just for testing, clear all data
-// browser.storage.local.clear();
-
-// INITIALIZE VALUES
-
 const ONE_DAY_MS = 86400000,
     ONE_MINUTE_MS = 60000,
     ONE_HOUR_MS = 3600000,
@@ -29,11 +24,13 @@ const ONE_DAY_MS = 86400000,
         "monthSums",
         "nextAlertAt",
         "nextDayStartsAt",
+
         "oButtonBadgeTotal",
         "oDayStartOffset",
         "oNotificationsOn",
         "oNotificationsRate",
         "oWhitelistArray",
+
         "past7daySum",
         "timerMode",
         "today",
@@ -83,17 +80,16 @@ var format_time_minimal = time => {
 var get_next_day_starts_at = (dayNum, aDayStartOffset) => {
     // determine when the next day starts in milliseconds since midnight on 1/1/1970
     // add one to get next day, convert to milliseconds,
-    // adjust for local time zone, and add 4 hours so new day starts at 4am
+    // adjust for local time zone, and add aDayStartOffset so new day starts at e.g. 4am
     let localTimeZoneOffsetMS = new Date().getTimezoneOffset() * ONE_MINUTE_MS,
         startsAt = ((dayNum + 1) * ONE_DAY_MS) + localTimeZoneOffsetMS + (aDayStartOffset * ONE_HOUR_MS);
-        // console.log("DAYNUMS", dayNum);
     return startsAt;
 };
 
 var get_domain_keys = aStorage => {
     let allKeys = Object.keys(aStorage),
         domainKeys = allKeys.filter(key => !STORAGE_KEYS.includes(key));
-        return domainKeys;
+    return domainKeys;
 };
 
 var extract_domain_data = aStorage => {
@@ -159,8 +155,8 @@ async function delete_all_data() {
 
 // INITIALIZE DATA STORAGE
 
-// accepts a date object, returns the number of that day starting from 1/1/1970
-// date arg has already been adjusted for 4am day change.
+// Accepts a date object, returns the number of that day starting from 1/1/1970.
+// The date arg has already been adjusted for 4am day change.
 // The offset for the local time zone (getTimezoneOffset) is given in minutes
 // so convert it to milliseconds.
 // Subtract the time zone offset because it is positive if behind UTC and
@@ -177,13 +173,15 @@ var get_day_number = (date) => {
 };
 
 var get_week_number = (dayNumber) => {
-    // returns the day number of the Sunday before the dayNumber argument
-    // we don't use Date.prototype.getDay for this to avoid time zone complications
+    // Returns the day number of the Sunday before the dayNumber argument.
+    // We don't use Date.prototype.getDay to avoid time zone complications.
     return dayNumber - ((dayNumber - 3) % 7);
 };
 
-var get_day_header_text = (date) => (DAY_NAMES[date.getDay()] + "   " +
-                                    (date.getMonth() + 1) + "/" + date.getDate());
+var get_day_header_text = (date) => {
+    return DAY_NAMES[date.getDay()] + "   " +
+        (date.getMonth() + 1) + "/" + date.getDate();
+};
 
 var get_date_with_offset = (aOffset) => {
     return new Date(Date.now() - (aOffset * ONE_HOUR_MS));
@@ -196,10 +194,6 @@ var get_empty_today_object = (aDayStartOffset) => {
     // subtract offset in ms from current time for adjusted day change moment
     let date = get_date_with_offset(aDayStartOffset),
         dayNumber = get_day_number(date);
-
-    // console.log( ( get_next_day_starts_at(dayNumber) - Date.now() ) / ONE_MINUTE_MS / 60 + " = hours until new day");
-    // console.log( ( get_next_day_starts_at(dayNumberDttt) - Date.now() ) / 1000 / 60 / 60 + " = hours until new day (DTTT)");
-
     return {
         headerText: get_day_header_text(date),
         monthNum: date.getMonth() + 1,
