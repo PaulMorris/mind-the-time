@@ -7,13 +7,24 @@ var get_next_alert_at = (aRateInMins, aTotalSecs) => {
     return aTotalSecs + (rateSecs - (aTotalSecs % rateSecs));
 };
 
+var get_notification_message = (aStorage) => {
+    let domainData = extract_domain_data(aStorage),
+        domainsArray = domain_obj_to_array(domainData),
+        topFive = domainsArray.slice(0, 3),
+        reducer = (msg, dmn) => msg + format_time(dmn[1]) + "  " + dmn[0] + "\n",
+        message = topFive.reduce(reducer, "");
+    return message;
+};
+
 async function show_notification(minutes) {
     try {
-        let id = await browser.notifications.create({
+        let storage = await STORAGE.get(null),
+            message = await get_notification_message(storage),
+            id = await browser.notifications.create({
                 "type": "basic",
                 "iconUrl": browser.extension.getURL("icons/hourglass-icon-64.png"),
-                "title": "Mind the Time - " + minutes,
-                "message": ""
+                "title": minutes + " Today",
+                "message": message
             });
         setTimeout(() => {
             browser.notifications.clear(id);

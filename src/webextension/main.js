@@ -98,6 +98,20 @@ var extract_domain_data = aStorage => {
     return domainData;
 };
 
+var domain_obj_to_array = (obj) => {
+    // takes a domains object and generates an array of sorted domain data
+    let arr = [];
+
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key) && obj[key] !== 0) {
+            // round to the nearest second
+            arr.push([ key, Math.round(obj[key]) ]);
+        }
+    }
+    // return sorted array
+    return arr.sort((a, b) => b[1] - a[1]);
+};
+
 var sanitize_whitelist = oldWhitelistString => {
     // takes a string (from the whitelist pref) and returns an array
     let items = oldWhitelistString.split(','),
