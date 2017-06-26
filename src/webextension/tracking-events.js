@@ -243,17 +243,17 @@ var clock_on_timeout_function = () => {
 
 // when user is idle for IDLE_TIMEOUT_SECS we clock off, then when user becomes
 // active again we clock back on
-async function idle_handler(aState) {
-    // console.log('idle state:', aState);
+async function idle_handler(aIdleState) {
+    // console.log('idle state:', aIdleState);
     try {
         let windowInfo = await browser.windows.getLastFocused();
         if (windowInfo.focused) {
             maybe_clock_off(gState);
-            if (aState === "active") {
+            if (aIdleState === "active") {
                 pre_clock_on();
             }
+            // else aIdleState is 'idle' or 'locked' and we just clock off and do no more
         }
-        // else state is 'idle' or 'locked' and we just clock off and do no more
     } catch (e) {
         console.error(e);
     }
