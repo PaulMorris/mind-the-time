@@ -42,7 +42,7 @@ var combine_data_from_days = (sourceArray) => {
     }
 
     // convert domains object to sorted array
-    summ.dmnsArray = domain_obj_to_array( dmns );
+    summ.dmnsArray = get_sorted_domains(dmns);
     return summ;
 };
 
@@ -100,7 +100,7 @@ var make_new_day_state = (aStorage) => {
 
         // final dump of domain data to an array
         domainData = extract_domain_data(aStorage),
-        domainsArray = domain_obj_to_array(domainData);
+        domainsArray = get_sorted_domains(domainData);
 
     // create a new element in aStorage.days array (the new aStorage.days[0] ), copying the data over
     aStorage.days.unshift({

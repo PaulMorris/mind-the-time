@@ -336,7 +336,7 @@ var load_summary = (aStorage) => {
         domainData = gBackground.extract_domain_data(aStorage),
         headerText = "Today, " + today.headerText;
 
-    today.dmnsArray = gBackground.domain_obj_to_array(domainData);
+    today.dmnsArray = gBackground.get_sorted_domains(domainData);
 
     // round because today's total is still dynamic, not done yet.
     today.totalSecs = Math.round(aStorage.totalSecs);

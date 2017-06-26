@@ -9,7 +9,7 @@ var get_next_alert_at = (aRateInMins, aTotalSecs) => {
 
 var get_notification_message = (aStorage) => {
     let domainData = extract_domain_data(aStorage),
-        domainsArray = domain_obj_to_array(domainData),
+        domainsArray = get_sorted_domains(domainData),
         topFive = domainsArray.slice(0, 3),
         reducer = (msg, dmn) => msg + format_time(dmn[1]) + "  " + dmn[0] + "\n",
         message = topFive.reduce(reducer, "");
