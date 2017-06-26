@@ -285,7 +285,7 @@ async function handle_day_start_offset_change(aDayStartOffset) {
         // Start a new day if the new day offset is moved into the past.
         let fromStorage = await STORAGE.get('today');
         if (dayNum > fromStorage.today.dayNum) {
-            await start_new_day();
+            start_new_day();
         }
     } catch (e) {
         console.error(e);
@@ -296,7 +296,7 @@ async function handle_notifications_change() {
     try {
         let fromStorage = await STORAGE.get(["oNotificationsRate", "totalSecs"]),
             next = get_next_alert_at(fromStorage.oNotificationsRate, fromStorage.totalSecs);
-        await STORAGE.set({nextAlertAt: next});
+        STORAGE.set({nextAlertAt: next});
     } catch (e) {
         console.error(e);
     }
