@@ -35,60 +35,70 @@ async function show_notification(minutes) {
     }
 };
 
-async function log_seconds(aDomain, aSeconds) {
-    // console.log('logging ', aSeconds, "seconds at", aDomain);
+async function maybe_show_notification() {
     try {
         let fromStorage = await STORAGE.get([
                 "totalSecs",
                 "oNotificationsOn",
                 "oNotificationsRate",
-                "nextAlertAt",
-                aDomain
+                "nextAlertAt"
             ]),
-            oldSeconds = fromStorage[aDomain] || 0,
-            currentSecs = oldSeconds + aSeconds,
-            newTotalSecs = fromStorage.totalSecs += aSeconds,
+            totalSecs = fromStorage.totalSecs;
 
-            newData = {totalSecs: newTotalSecs};
-
-        newData[aDomain] = currentSecs;
-
-        // show a notification?
         if (fromStorage.oNotificationsOn &&
             fromStorage.oNotificationsRate > 0 &&
-            newTotalSecs >= fromStorage.nextAlertAt) {
-                // somehow we were getting duplicate notifications, so we prevent that
-                let minutes = format_time(newTotalSecs);
-                if (minutes !== gState.notificationsMinutes) {
-                    gState.notificationsMinutes = minutes;
-                    show_notification(minutes);
-                }
-                let next = get_next_alert_at(fromStorage.notificationsRate, newTotalSecs);
-                newData.nextAlertAt = next;
+            totalSecs >= fromStorage.nextAlertAt) {
+
+            // somehow we got duplicate notifications, so we prevent that
+            let minutes = format_time(totalSecs);
+            if (minutes !== gState.notificationsMinutes) {
+                gState.notificationsMinutes = minutes;
+                show_notification(minutes);
+            }
+            let next = get_next_alert_at(fromStorage.oNotificationsRate, totalSecs);
+            STORAGE.set({nextAlertAt: next});
         }
-
-        await STORAGE.set(newData);
-
     } catch (e) {
         console.error(e);
     }
 };
 
-// stops timing and adds elapsed time to totals
+async function log_seconds(aDomain, aRawSeconds) {
+    try {
+        let fromStorage = await STORAGE.get(["totalSecs", aDomain]),
+            oldSeconds = fromStorage[aDomain] || 0,
+            // Round to two decimal places.
+            newSeconds = Math.round(aRawSeconds * 100) / 100,
+            newData = {totalSecs: fromStorage.totalSecs + newSeconds};
+
+        newData[aDomain] = oldSeconds + newSeconds;
+        STORAGE.set(newData);
+    } catch (e) {
+        console.error(e);
+    }
+};
+
+async function log_and_notify(aDomain, aRawSeconds) {
+    try {
+        await log_seconds(aDomain, aRawSeconds);
+        maybe_show_notification();
+    } catch (e) {
+        console.error(e);
+    }
+};
+
 var maybe_clock_off = (aState) => {
     if (aState.startStamp) {
         // console.log('clock off');
         let startStamp = aState.startStamp;
 
         // null timestamp means don't clock off again until after clock on
-        aState.startStamp = null;
+        gState.startStamp = null;
         clearTimeout(aState.clockOnTimeout);
 
-        // calculate how many seconds have passed, rounding to two decimal places
-        let rawSeconds = ( Date.now() - startStamp ) / 1000;
+        let rawSeconds = (Date.now() - startStamp) / 1000;
         if (rawSeconds > 1) {
-            let seconds = Math.round( rawSeconds * 100 ) / 100;
-            log_seconds(aState.timingDomain, seconds);
+            log_and_notify(aState.timingDomain, rawSeconds);
         }
     }
 };
