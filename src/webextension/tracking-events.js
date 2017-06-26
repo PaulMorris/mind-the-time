@@ -71,6 +71,8 @@ async function log_seconds(aDomain, aRawSeconds) {
             newSeconds = Math.round(aRawSeconds * 100) / 100,
             newData = {totalSecs: fromStorage.totalSecs + newSeconds};
 
+        console.log('log_seconds', newSeconds, aDomain);
+
         newData[aDomain] = oldSeconds + newSeconds;
         STORAGE.set(newData);
     } catch (e) {
@@ -89,7 +91,7 @@ async function log_and_notify(aDomain, aRawSeconds) {
 
 var maybe_clock_off = (aState) => {
     if (aState.startStamp) {
-        // console.log('clock off');
+        console.log('clock off');
         let startStamp = aState.startStamp;
 
         // null timestamp means don't clock off again until after clock on
@@ -128,7 +130,7 @@ var get_clock_on_timeout_MS = (aTotalSecs) => {
 
 // handle request to start timing for a site
 async function clock_on(aState, fromStorage, aUrl) {
-    // console.log('clock_on', aUrl);
+    console.log('clock_on', aUrl);
 
     // check if the domain is clockable and update ticker
     let domain = get_clockable_domain(aState.timingDomain, fromStorage.oWhitelistArray, aUrl);
@@ -247,6 +249,10 @@ async function idle_handler(aIdleState) {
     // console.log('idle state:', aIdleState);
     try {
         let windowInfo = await browser.windows.getLastFocused();
+
+        let d = new Date;
+        console.log('idle-state:', aIdleState, 'window-focused:', windowInfo.focused, d.getHours() + ':' + d.getMinutes());
+
         if (windowInfo.focused) {
             maybe_clock_off(gState);
             if (aIdleState === "active") {
