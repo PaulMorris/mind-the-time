@@ -21,7 +21,7 @@ var get_past7days_header_text = (num) => {
         toMonth = to.getMonth() + 1,
         toDate = to.getDate();
 
-    return PAST_7_DAYS_TEXT + "   " + fromMonth + "/" + fromDate + " - " + toDate + "/" + toDate;
+    return PAST_7_DAYS_TEXT + "   " + fromMonth + "/" + fromDate + " - " + toMonth + "/" + toDate;
 };
 
 var combine_data_from_days = (sourceArray) => {

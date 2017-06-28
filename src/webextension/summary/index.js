@@ -478,6 +478,7 @@ var load_the_rest = (storage) => {
     if (table_needed(weekSums[1])) {
         let prevWeekTable2 = make_table(weekSums[1], weekSums[1].headerText, "box12");
         document.getElementById("box12").appendChild(prevWeekTable2);
+        document.getElementById("box12").style.display = "block";
     }
 
     for (n = 9; n >= 2; n -= 1) {
