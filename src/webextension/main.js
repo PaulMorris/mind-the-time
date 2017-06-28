@@ -191,16 +191,18 @@ var get_day_header_text = (date) => {
         (date.getMonth() + 1) + "/" + date.getDate();
 };
 
-var get_date_with_offset = (aOffset) => {
-    return new Date(Date.now() - (aOffset * ONE_HOUR_MS));
+var get_date_with_offset = (aOffset, aDateNow) => {
+    // aDateNow is Date.now(), the number of milliseconds elapsed since
+    // 1 January 1970 00:00:00 UTC
+    // Subtract offset in ms to get adjusted day change moment.
+    return new Date(aDateNow - (aOffset * ONE_HOUR_MS));
 };
 
-var get_empty_today_object = (aDayStartOffset) => {
-    // used to initialize or reset today object.
-    // used at add-on install, new day, delete all data.
-
-    // subtract offset in ms from current time for adjusted day change moment
-    let date = get_date_with_offset(aDayStartOffset),
+var get_empty_today_object = (aDayStartOffset, aDateNow) => {
+    // Used to initialize or reset today object, for add-on install, new day,
+    // delete all data. aDateNow is Date.now(), the number of milliseconds
+    // elapsed since 1 January 1970 00:00:00 UTC
+    let date = get_date_with_offset(aDayStartOffset, aDateNow),
         dayNumber = get_day_number(date);
     return {
         headerText: get_day_header_text(date),
@@ -250,7 +252,7 @@ var get_initial_storage = (aStorage = {}) => {
 
     let dayNum;
     if (!aStorage.today) {
-        newStorage.today = get_empty_today_object(newStorage.oDayStartOffset);
+        newStorage.today = get_empty_today_object(newStorage.oDayStartOffset, Date.now());
         dayNum = newStorage.today.dayNum;
     } else {
         dayNum = aStorage.today.dayNum;

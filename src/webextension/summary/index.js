@@ -543,8 +543,10 @@ async function start_load () {
             browser.storage.local.get()
         ]);
         gBackground = bg;
-        if (Date.now() > storage.nextDayStartsAt) {
-            await gBackground.start_new_day();
+
+        let dateNow = Date.now();
+        if (dateNow > storage.nextDayStartsAt) {
+            await gBackground.start_new_day(dateNow);
         }
         load_summary(storage);
         return true;

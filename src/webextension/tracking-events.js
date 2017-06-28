@@ -177,11 +177,12 @@ async function get_current_url() {
 async function pre_clock_on_2(aUrl) {
     try {
         let url = aUrl || await get_current_url(),
-            fromStorage = await STORAGE.get(["nextDayStartsAt", "oWhitelistArray", "totalSecs"]);
+            fromStorage = await STORAGE.get(["nextDayStartsAt", "oWhitelistArray", "totalSecs"]),
+            dateNow = Date.now();
 
-        // console.log('hours until new day:', (aNextDayStartsAt - Date.now()) / 3600000);
-        if (Date.now() > fromStorage.nextDayStartsAt) {
-            await start_new_day();
+        // console.log('hours until new day:', (fromStorage.nextDayStartsAt - dateNow) / 3600000);
+        if (dateNow > fromStorage.nextDayStartsAt) {
+            await start_new_day(dateNow);
         }
         clock_on(gState, fromStorage, url);
     } catch (e) {
@@ -281,8 +282,8 @@ var storage_change_inspector = (changes) => {
 */
 
 async function handle_day_start_offset_change(aDayStartOffset) {
-    let dayStartOffsetMS = aDayStartOffset * ONE_HOUR_MS,
-        date = new Date(Date.now() - dayStartOffsetMS),
+    let dateNow = Date.now(),
+        date = get_date_with_offset(aDayStartOffset, aDateNow),
         dayNum = get_day_number(date),
         next = get_next_day_starts_at(dayNum, aDayStartOffset);
     try {
@@ -291,7 +292,7 @@ async function handle_day_start_offset_change(aDayStartOffset) {
         // Start a new day if the new day offset is moved into the past.
         let fromStorage = await STORAGE.get('today');
         if (dayNum > fromStorage.today.dayNum) {
-            start_new_day();
+            start_new_day(dateNow);
         }
     } catch (e) {
         console.error(e);

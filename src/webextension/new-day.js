@@ -90,10 +90,12 @@ var make_past7days_summ = (num, days) => {
     return summ;
 };
 
-var make_new_day_state = (aStorage) => {
+var make_new_day_state = (aStorage, aDateNow) => {
+    // aDateNow is Date.now(), the number of milliseconds elapsed since
+    // 1 January 1970 00:00:00 UTC
     // We want the day to possibly change at other times than midnight,
     // so subtract offset in milliseconds from current UTC time.
-    let date = new Date(Date.now() - (aStorage.oDayStartOffset * ONE_HOUR_MS)),
+    let date = get_date_with_offset(aStorage.oDayStartOffset, aDateNow),
         dayNumNow = get_day_number(date),
         monthNumNow = date.getMonth() + 1,
         weekNumNow = get_week_number(dayNumNow),
@@ -117,21 +119,25 @@ var make_new_day_state = (aStorage) => {
         aStorage.days.length = 70;
     }
 
-    // check for new week and new month
-    // make a final summary and remove any extra elements
+
+    // Refresh summaries for past7days, week, month.
+    aStorage.past7daySum = make_past7days_summ(dayNumNow, aStorage.days);
+    aStorage.weekSums[0] = make_week_summ(aStorage.today.weekNum, aStorage.days);
+    aStorage.monthSums[0] = make_month_summ(aStorage.today.monthNum, aStorage.days);
+
+    // Check if we are in a new week or a new month, if so, add a new summary,
+    // pushing previous one back, and remove any that are too old.
     if (aStorage.today.weekNum !== weekNumNow) {
-        aStorage.weekSums[0] = make_week_summ(aStorage.today.weekNum, aStorage.days);
-        // we are about to add a new one below to make 10
-        aStorage.weekSums.length = 9;
+        aStorage.weekSums.unshift(make_week_summ(weekNumNow, aStorage.days));
+        aStorage.weekSums.length = 10;
     }
     if (aStorage.today.monthNum !== monthNumNow) {
-        aStorage.monthSums[0] = make_month_summ(aStorage.today.monthNum, aStorage.days);
-        // we are about to add a new one below to make 6
-        aStorage.monthSums.length = 5;
+        aStorage.monthSums.unshift(make_month_summ(monthNumNow, aStorage.days));
+        aStorage.monthSums.length = 6;
     }
 
     // initialize aStorage.today object for new day's data
-    aStorage.today = get_empty_today_object(aStorage.oDayStartOffset);
+    aStorage.today = get_empty_today_object(aStorage.oDayStartOffset, aDateNow);
     aStorage.nextDayStartsAt = get_next_day_starts_at(aStorage.today.dayNum, aStorage.oDayStartOffset);
 
     // clear domain data (we have to do both STORAGE and aStorage)
@@ -140,11 +146,6 @@ var make_new_day_state = (aStorage) => {
     STORAGE.remove(domainKeys);
     aStorage.totalSecs = 0;
 
-    // make current summaries for week, month, past7days
-    aStorage.past7daySum = make_past7days_summ(dayNumNow, aStorage.days);
-    aStorage.weekSums.unshift(make_week_summ(weekNumNow, aStorage.days));
-    aStorage.monthSums.unshift(make_month_summ(monthNumNow, aStorage.days));
-
     // reset alert messages
     aStorage.nextAlertAt = get_next_alert_at(aStorage.oNotificationsRate, 0);
 
@@ -152,10 +153,12 @@ var make_new_day_state = (aStorage) => {
     return aStorage;
 };
 
-async function start_new_day() {
+async function start_new_day(aDateNow) {
+    // aDateNow is Date.now(), the number of milliseconds elapsed since
+    // 1 January 1970 00:00:00 UTC
     try {
         let storage = await STORAGE.get();
-        return STORAGE.set(make_new_day_state(storage));
+        return STORAGE.set(make_new_day_state(storage, aDateNow));
     } catch (e) {
         console.error(e);
     }
