@@ -18,12 +18,12 @@ async function migrate_summary_page() {
     }
 };
 
-async function maybe_migrate_data() {
+async function maybe_migrate_data(forced = false) {
     try {
         let storage = await STORAGE.get(),
             dataAlreadyExists = storage && storage.oDayStartOffset !== undefined;
 
-        if (dataAlreadyExists) {
+        if (dataAlreadyExists && !forced) {
             // Data already exists; dont migrate.
             // We make sure timerMode will always be (re)set, which causes the storage
             // change listeners to fire, and then other listeners will be set up based on
