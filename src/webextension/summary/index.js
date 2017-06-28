@@ -556,3 +556,19 @@ async function start_load () {
 };
 
 start_load();
+
+
+// FOR TESTING NEW DAY CODE
+/*
+async function test_new_day_2(dnow) {
+    gBackground.maybe_clock_off(gBackground.gState);
+    await handle_reload_click();
+    await gBackground.start_new_day(dnow);
+    test_new_day(dnow);
+}
+
+function test_new_day(dnow = Date.now()) {
+    gBackground.pre_clock_on(["http://mozilla.org", "http://gnu.org", "http://ubuntu.org"][dnow % 3]);
+    setTimeout(test_new_day_2.bind(null, dnow + 86400001), 2000);
+};
+*/
