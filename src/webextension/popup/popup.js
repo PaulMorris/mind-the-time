@@ -11,11 +11,15 @@ async function handle_summary_button_click() {
             summaryTab = tabs.filter((t) => t.url === url);
 
         if (summaryTab[0]) {
-            browser.windows.update(summaryTab[0].windowId, {focused: true});
-            browser.tabs.update(summaryTab[0].id, {active: true});
+            // We have to activate the tab first because if the active window
+            // changes, the popup closes, taking this code down with it.
+            await browser.tabs.update(summaryTab[0].id, {active: true});
+            await browser.windows.update(summaryTab[0].windowId, {focused: true});
         } else {
             browser.tabs.create({url: url});
         }
+        // Close the popup dropdown, if it is still open and this code is still
+        // running.
         window.close();
     } catch (e) {
         console.error(e);
