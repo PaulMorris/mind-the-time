@@ -201,14 +201,14 @@ var pre_clock_on = (aUrl) => {
 
 var tabs_on_updated = (tabId, changeInfo, tab) => {
     if (changeInfo.url) {
-        // console.log('tabs.onUpdated', tabId, changeInfo, tab);
+        console.log('tabs.onUpdated', tabId, changeInfo, tab);
         maybe_clock_off(gState);
         pre_clock_on(changeInfo.url);
     }
 };
 
 async function tabs_on_activated(activeInfo) {
-    // console.log('tabs.onActivated', activeInfo);
+    console.log('tabs.onActivated', activeInfo);
     try {
         let tabInfo = await browser.tabs.get(activeInfo.tabId);
         maybe_clock_off(gState);
@@ -219,17 +219,18 @@ async function tabs_on_activated(activeInfo) {
 };
 
 var tabs_activated_updated_blue_mode = () => {
+    console.log('tabs_activated_updated_blue_mode');
     maybe_clock_off(gState);
     pre_clock_on("http://o3xr2485dmmdi78177v7c33wtu7315.net/");
 };
 
 var tabs_on_removed = (tabId, removeInfo) => {
-    // console.log('tabs.onRemoved', removeInfo);
+    console.log('tabs.onRemoved', removeInfo);
     maybe_clock_off(gState);
 };
 
 var windows_on_focus_changed = (windowId) => {
-    // console.log('windows.onFocusChanged', windowId);
+    console.log('windows.onFocusChanged', windowId);
     maybe_clock_off(gState);
     if (windowId !== -1) {
         pre_clock_on();
@@ -237,6 +238,7 @@ var windows_on_focus_changed = (windowId) => {
 };
 
 var clock_on_timeout_function = () => {
+    console.log('clock_on_timeout_function');
     maybe_clock_off(gState);
     pre_clock_on();
 };
