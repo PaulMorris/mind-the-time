@@ -56,19 +56,6 @@ var get_null_gState = () => ({
 
 var is_null_or_undefined = thing => thing === null || thing === undefined;
 
-var time_to_hours_and_minutes = time => {
-    let absTime = Math.abs(time),
-        h = Math.floor(absTime / 3600),
-        m = Math.floor(absTime / 60) % 60;
-    return [h, m];
-};
-
-var format_time = time => {
-    let [h, m] = time_to_hours_and_minutes(time);
-    return ((h < 1) ? "0:" : h + ":") +
-           ((m < 10) ? ((m < 1) ? "00" : "0" + m) : m);
-};
-
 var format_time_minimal = time => {
     // used for ticker button badge
     let [h, m] = time_to_hours_and_minutes(time);

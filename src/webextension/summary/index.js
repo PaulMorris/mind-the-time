@@ -19,14 +19,6 @@ document.body.removeChild(document.getElementById("loadFailMessage"));
 
 var gTodayStamp;
 
-var format_time = (time) => {
-    let absTime = Math.abs(time),
-        h = Math.floor(absTime / 3600),
-        m = Math.floor(absTime / 60) % 60;
-    return ((h < 1) ? "0:" : h + ":") +
-           ((m < 10) ? ((m < 1) ? "00" : "0" + m) : m);
-};
-
 // TABLE CONSTRUCTION
 
 var put_in_td = (elem) => {

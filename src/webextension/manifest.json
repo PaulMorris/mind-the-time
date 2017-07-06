@@ -12,6 +12,7 @@
   },
   "background": {
     "scripts": [
+        "format-time.js",
         "new-day.js",
         "ticker-timer-modes.js",
         "tracking-events.js",
