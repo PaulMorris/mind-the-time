@@ -105,20 +105,7 @@ var maybe_clock_off = (aState) => {
     }
 };
 
-var get_clockable_domain = (aDomain, aWhitelistArray, aUrl) => {
-    let urlObj = new URL(aUrl),
-        dom = urlObj.host;
-
-    // Only deal with url if it is different from last clock on
-    if (dom !== aDomain) {
-        let protocol = urlObj.protocol;
-        if ((protocol !== 'http:' && protocol !== 'https:') ||
-            aWhitelistArray.includes(dom)) {
-            return false;
-        }
-    }
-    return dom;
-};
+var is_clockable_protocol = (aProt) => (aProt === 'http:' || aProt === 'https:');
 
 var get_clock_on_timeout_MS = (aTotalSecs) => {
     // Wait at least some minimum amount.
@@ -132,9 +119,15 @@ var get_clock_on_timeout_MS = (aTotalSecs) => {
 async function clock_on(aState, fromStorage, aUrl) {
     console.log('clock_on', aUrl);
 
-    // check if the domain is clockable and update ticker
-    let domain = get_clockable_domain(aState.timingDomain, fromStorage.oWhitelistArray, aUrl);
-    if (domain) {
+    // Check if the domain is clockable and update ticker.
+    // Only deal with the domain if it is different from the last clock on,
+    // is a clockable url protocol (http/https), and is not in the whitelist.
+    let url = new URL(aUrl),
+        domain = url.host;
+    if (domain !== aState.timingDomain &&
+        is_clockable_protocol(url.protocol) &&
+        !fromStorage.oWhitelistArray.includes(domain)) {
+
         aState.timingDomain = domain;
         try {
             let result = await STORAGE.get(domain);
