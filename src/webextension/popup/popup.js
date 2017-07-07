@@ -21,9 +21,8 @@ async function handle_summary_button_click() {
         // Close the popup dropdown, if it is still open and this code is still
         // running.
         window.close();
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 document.getElementById("summaryButton").addEventListener('click', handle_summary_button_click);
@@ -44,9 +43,8 @@ async function update_ticker_div() {
         let gBackground = await browser.runtime.getBackgroundPage(),
             tickerDiv = document.getElementById("tickerDiv");
         tickerDiv.textContent = await gBackground.get_popup_ticker();
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 update_ticker_div();

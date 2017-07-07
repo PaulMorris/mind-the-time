@@ -142,9 +142,7 @@ async function delete_all_data() {
         if (summaryTab) {
             browser.tabs.reload(summaryTab.id, {bypassCache: true});
         }
-    } catch (e) {
-        console.error(e);
-    }
+    } catch (e) { console.error(e); }
 };
 
 
@@ -275,9 +273,8 @@ async function handle_startup() {
         await STORAGE.set(timerModeResult);
         initialize_state();
         browser.runtime.onStartup.removeListener(handle_startup);
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 async function handle_installed(details) {
@@ -292,9 +289,8 @@ async function handle_installed(details) {
             handle_startup();
         }
         browser.runtime.onInstalled.removeListener(handle_installed);
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 browser.runtime.onInstalled.addListener(handle_installed);

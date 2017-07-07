@@ -247,9 +247,8 @@ async function handle_days_button_click() {
         node.parentNode.removeChild(node);
         add_day_big_rows(days_partB.length, 15, 29);
         add_day_tables(days_partB, 15, 29);
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 var make_more_days_button = () => {
@@ -529,7 +528,7 @@ document.getElementById("reloadButton").addEventListener("click", handle_reload_
 // functions and global variables.
 var gBackground;
 
-async function start_load () {
+async function start_load() {
     try {
         let [bg, storage] = await Promise.all([
             browser.runtime.getBackgroundPage(),
@@ -543,9 +542,8 @@ async function start_load () {
         }
         load_summary(storage);
         return true;
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 start_load();

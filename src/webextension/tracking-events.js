@@ -30,9 +30,8 @@ async function show_notification(minutes) {
             browser.notifications.clear(id);
             gState.notificationIsShowing = false;
         }, 8000);
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 async function maybe_show_notification() {
@@ -58,9 +57,7 @@ async function maybe_show_notification() {
             let next = get_next_alert_at(fromStorage.oNotificationsRate, totalSecs);
             STORAGE.set({nextAlertAt: next});
         }
-    } catch (e) {
-        console.error(e);
-    }
+    } catch (e) { console.error(e); }
 };
 
 async function log_seconds(aDomain, aRawSeconds) {
@@ -75,9 +72,8 @@ async function log_seconds(aDomain, aRawSeconds) {
 
         newData[aDomain] = oldSeconds + newSeconds;
         STORAGE.set(newData);
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 async function maybe_clock_off(aState) {
@@ -96,9 +92,7 @@ async function maybe_clock_off(aState) {
                 maybe_show_notification();
             }
         }
-    } catch (e) {
-        console.error(e);
-    }
+    } catch (e) { console.error(e); }
 };
 
 var is_clockable_protocol = (aProt) => (aProt === 'http:' || aProt === 'https:');
@@ -128,9 +122,9 @@ async function clock_on(aState, fromStorage, aUrl) {
         try {
             let result = await STORAGE.get(domain);
             update_ticker(result[domain], fromStorage.totalSecs);
-        } catch (e) {
-            console.error(e);
-        }
+
+        } catch (e) { console.error(e); }
+
     } else {
         update_ticker(0, fromStorage.totalSecs);
         return;
@@ -158,9 +152,8 @@ async function get_current_url() {
     try {
         let tabs = await browser.tabs.query({currentWindow: true, active: true});
         return tabs[0].url;
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 async function pre_clock_on_2(aUrl) {
@@ -174,9 +167,8 @@ async function pre_clock_on_2(aUrl) {
             await start_new_day(dateNow);
         }
         clock_on(gState, fromStorage, url);
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 var pre_clock_on = (aUrl) => {
@@ -195,9 +187,7 @@ async function tabs_on_updated(tabId, changeInfo, tab) {
             await maybe_clock_off(gState);
             pre_clock_on(changeInfo.url);
         }
-    } catch (e) {
-        console.error(e);
-    }
+    } catch (e) { console.error(e); }
 };
 
 async function tabs_on_activated(activeInfo) {
@@ -206,9 +196,8 @@ async function tabs_on_activated(activeInfo) {
         let tabInfo = await browser.tabs.get(activeInfo.tabId);
         await maybe_clock_off(gState);
         pre_clock_on(tabInfo.url);
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 async function tabs_activated_updated_blue_mode() {
@@ -216,9 +205,8 @@ async function tabs_activated_updated_blue_mode() {
     try {
         await maybe_clock_off(gState);
         pre_clock_on("http://o3xr2485dmmdi78177v7c33wtu7315.net/");
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 var tabs_on_removed = (tabId, removeInfo) => {
@@ -233,9 +221,7 @@ async function windows_on_focus_changed(windowId) {
         if (windowId !== -1) {
             pre_clock_on();
         }
-    } catch (e) {
-        console.error(e);
-    }
+    } catch (e) { console.error(e); }
 };
 
 async function clock_on_timeout_function() {
@@ -243,9 +229,8 @@ async function clock_on_timeout_function() {
     try {
         await maybe_clock_off(gState);
         pre_clock_on();
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 
@@ -268,9 +253,7 @@ async function idle_handler(aIdleState) {
             }
             // else aIdleState is 'idle' or 'locked' and we just clock off and do no more
         }
-    } catch (e) {
-        console.error(e);
-    }
+    } catch (e) { console.error(e); }
 };
 
 
@@ -295,9 +278,8 @@ async function handle_whitelist_change() {
         await maybe_clock_off(gState);
         gState.timingDomain = null;
         pre_clock_on();
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 async function handle_day_start_offset_change(aDayStartOffset) {
@@ -313,9 +295,7 @@ async function handle_day_start_offset_change(aDayStartOffset) {
         if (dayNum > fromStorage.today.dayNum) {
             start_new_day(dateNow);
         }
-    } catch (e) {
-        console.error(e);
-    }
+    } catch (e) { console.error(e); }
 };
 
 async function handle_notifications_change() {
@@ -323,9 +303,8 @@ async function handle_notifications_change() {
         let fromStorage = await STORAGE.get(["oNotificationsRate", "totalSecs"]),
             next = get_next_alert_at(fromStorage.oNotificationsRate, fromStorage.totalSecs);
         STORAGE.set({nextAlertAt: next});
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 async function handle_timer_mode_change(mode) {
@@ -336,9 +315,8 @@ async function handle_timer_mode_change(mode) {
         set_popup_ticker_function(mode);
         set_badge_for_timer_mode(mode);
         pre_clock_on();
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 // Even when a new value is the same as the old value it will fire this listener.

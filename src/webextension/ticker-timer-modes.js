@@ -68,9 +68,7 @@ async function set_ticker_update_function(mode) {
         } else {
             update_ticker = update_ticker_default;
         }
-    } catch (e) {
-        console.error(e);
-    }
+    } catch (e) { console.error(e); }
 };
 
 // For updating the time shown in the popup ticker. Returns a promise/string.
@@ -82,18 +80,16 @@ async function get_popup_ticker_default() {
         return format_time(fromStorage[domain] || 0) +
             "\u00a0\u00a0/\u00a0\u00a0" +
             format_time(fromStorage.totalSecs);
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 async function get_popup_ticker_total_only() {
     try {
         let fromStorage = await STORAGE.get('totalSecs');
         return format_time(fromStorage.totalSecs);
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 var get_popup_ticker;

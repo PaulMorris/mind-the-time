@@ -35,9 +35,8 @@ async function restore_options() {
         document.querySelector("#notificationsRate")["value"] = fromStorage.oNotificationsRate.toString() || 60;
         document.querySelector("#dayStartOffset")["value"] = fromStorage.oDayStartOffset.toString() || 4;
         document.querySelector("#whitelist")["value"] = fromStorage.oWhitelistArray.join(', ') || "";
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };
 
 document.addEventListener('DOMContentLoaded', restore_options);

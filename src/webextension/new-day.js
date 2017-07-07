@@ -159,7 +159,6 @@ async function start_new_day(aDateNow) {
     try {
         let storage = await STORAGE.get();
         return STORAGE.set(make_new_day_state(storage, aDateNow));
-    } catch (e) {
-        console.error(e);
-    }
+
+    } catch (e) { console.error(e); }
 };

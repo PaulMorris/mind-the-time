@@ -13,9 +13,7 @@ async function migrate_summary_page() {
             let newUrl = browser.extension.getURL("summary/index.html");
             browser.tabs.update(summaryTab.id, {url: newUrl});
         }
-    } catch (e) {
-        console.error(e);
-    }
+    } catch (e) { console.error(e); }
 };
 
 async function maybe_migrate_data(forced = false) {
