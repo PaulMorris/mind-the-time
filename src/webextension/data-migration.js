@@ -26,8 +26,8 @@ async function maybe_migrate_data(forced = false) {
             // We make sure timerMode will always be (re)set, which causes the storage
             // change listeners to fire, and then other listeners will be set up based on
             // the timer mode.
-            await STORAGE.set({timerMode: storage.timerMode});
             initialize_state();
+            await STORAGE.set({timerMode: storage.timerMode});
 
         } else {
             // No data; send migrate message.
@@ -35,8 +35,8 @@ async function maybe_migrate_data(forced = false) {
                 migrating = response && response.toStorage,
                 toStorage = migrating ? response.toStorage : {};
 
-            await STORAGE.set(get_initial_storage(toStorage));
             initialize_state();
+            await STORAGE.set(get_initial_storage(toStorage));
             if (migrating) {
                 migrate_summary_page();
             }
@@ -44,8 +44,8 @@ async function maybe_migrate_data(forced = false) {
     } catch (e) {
         console.error(e);
         // for development, allows loading and testing webextension part
-        await STORAGE.set(get_initial_storage());
         initialize_state();
+        await STORAGE.set(get_initial_storage());
     }
 };
 

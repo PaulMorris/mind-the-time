@@ -47,8 +47,10 @@ const ONE_DAY_MS = 86400000,
 var gState = {};
 
 var get_null_gState = () => ({
-    timingDomain: null,
-    startStamp: null,
+    timing: {
+        domain: null,
+        stamp: null
+    },
     clockOnTimeout: null,
     preClockOnTimeout: null,
     notificationsMinutes: ""
@@ -269,9 +271,9 @@ async function handle_startup() {
         // We make sure timerMode will always be (re)set, which causes the storage
         // change listeners to fire, and then other listeners will be set up based
         // on the timer mode.
+        initialize_state();
         let timerModeResult = await STORAGE.get('timerMode');
         await STORAGE.set(timerModeResult);
-        initialize_state();
         browser.runtime.onStartup.removeListener(handle_startup);
 
     } catch (e) { console.error(e); }
@@ -281,8 +283,8 @@ async function handle_installed(details) {
     // console.log("handle_installed", details.reason);
     try {
         if (details.reason === 'install') {
-            await STORAGE.set(get_initial_storage());
             initialize_state();
+            await STORAGE.set(get_initial_storage());
         } else {
             // When details.reason is update, chrome_update, etc. then
             // initialization is the same as for startup.

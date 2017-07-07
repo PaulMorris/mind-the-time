@@ -2,6 +2,16 @@
 
 "use strict";
 
+/*
+The big idea is there are two main operations. First, 'clock on' temporarily
+stores a domain and a starting time stamp for that domain.  Second, 'clock off'
+calculates the time elapsed since the time stamp for the domain, and adds that
+to the tally in storage for that domain.  It then clears the domain and the time
+stamp data.  Various events trigger a clock off attempt first and then clock on.
+Clock off is always tried before clock on so that any time is logged before a
+new timing 'cycle' begins.
+*/
+
 var get_next_alert_at = (aRateInMins, aTotalSecs) => {
     let rateSecs = aRateInMins * 60;
     return aTotalSecs + (rateSecs - (aTotalSecs % rateSecs));
@@ -82,9 +92,13 @@ async function maybe_clock_off(aStartStamp, aTimingDomain) {
         if (aStartStamp) {
             console.log('clock off', aTimingDomain, aStartStamp);
 
-            // null timestamp means don't clock off again until after clock on
-            gState.startStamp = null;
             clearTimeout(gState.clockOnTimeout);
+
+            // Clear timing data so we don't clock off again until after clock on.
+            Object.assign(gState.timing, {
+                domain: null,
+                stamp: null
+            });
 
             let rawSeconds = (Date.now() - aStartStamp) / 1000;
             if (rawSeconds > 1) {
@@ -95,8 +109,6 @@ async function maybe_clock_off(aStartStamp, aTimingDomain) {
     } catch (e) { console.error(e); }
 };
 
-var is_clockable_protocol = (aProt) => (aProt === 'http:' || aProt === 'https:');
-
 var get_clock_on_timeout_MS = (aTotalSecs) => {
     // Wait at least some minimum amount.
     let secsUntilNextMinute = (62 - (aTotalSecs % 60)),
@@ -105,47 +117,32 @@ var get_clock_on_timeout_MS = (aTotalSecs) => {
     return secs * 1000;
 };
 
-// handle request to start timing for a site
-async function clock_on(aTimingDomain, aStartStamp, aTotalSecs, aWhitelistArray, aUrl) {
-    console.log('clock_on', aUrl, 'aTimingDomain: ', aTimingDomain, 'aStartStamp: ', aStartStamp, 'aTotalSecs: ', aTotalSecs);
-
-    // Check if the domain is clockable and update ticker.
-    // Only deal with the domain if it is different from the last clock on,
-    // is a clockable url protocol (http/https), and is not in the whitelist.
-    let url = new URL(aUrl),
-        domain = url.host;
-    if (domain !== aTimingDomain &&
-        is_clockable_protocol(url.protocol) &&
-        !aWhitelistArray.includes(domain)) {
-
-        gState.timingDomain = domain;
-        try {
-            let result = await STORAGE.get(domain);
-            update_ticker(result[domain], aTotalSecs);
-
-        } catch (e) { console.error(e); }
-
-    } else {
-        update_ticker(0, aTotalSecs);
-        return;
-    }
-
-    // clock off should really always happen before clock on, and
-    // clock off sets gState.startStamp to null, so error if it's not null here
-    if (aStartStamp) {
-        console.warn("Mind the Time: clock on without prior clock off");
-    } else {
-        // set the starting time stamp
-        gState.startStamp = Date.now();
-    }
-
-    // start the timeout for re-clocking-off/on
-    // we set this timeout to clock on again after the next minute threshold has passed,
-    // for when the user has been active at same site/tab for more than a minute
-    // and we need to clock off and back on to update the ticker, notifications, etc.
+function restart_clock_on_timeout(aTotalSecs) {
+    // Restarts the timeout for re-clocking-off/on.
+    // We set this timeout to clock off and on again after the next minute
+    // threshold has passed, to update the ticker, notifications, etc. when
+    // the user has been active at same site/tab for more than a minute.
     let ms = get_clock_on_timeout_MS(aTotalSecs);
     gState.clockOnTimeout = setTimeout(clock_on_timeout_function, ms);
+}
+
+async function clock_on(aDomain) {
+    // Starts timing for a site.
+    console.log('clock_on', aDomain);
+
+    // Clock off should always happen before clock on, and it sets
+    // gState.timing values to null, so we warn and redo the clock off if not.
+    if (gState.timing.stamp && gState.timing.domain) {
+        console.warn("Mind the Time: clock on without prior clock off");
+        await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
+    }
+    Object.assign(gState.timing, {
+        domain: aDomain,
+        stamp: Date.now()
+    });
 };
+
+var is_clockable_protocol = (aProt) => (aProt === 'http:' || aProt === 'https:');
 
 async function get_current_url() {
     // returns a promise that resolves to the url of the active window/tab
@@ -157,18 +154,36 @@ async function get_current_url() {
 };
 
 async function pre_clock_on_2(aUrl) {
+    // Maybe starts a new day, updates the ticker, and maybe clocks on.
     try {
-        let dateNow = Date.now(),
-            url = aUrl || await get_current_url(),
-            fromStorage = await STORAGE.get(["nextDayStartsAt", "oWhitelistArray", "totalSecs"]);
+        let urlString = aUrl || await get_current_url(),
+            url = new URL(urlString),
+            domain = url.host,
+            dateNow = Date.now(),
+            fromStorage = await STORAGE.get([
+                "nextDayStartsAt",
+                "oWhitelistArray",
+                "totalSecs",
+                domain
+            ]);
 
         // console.log('hours until new day:', (fromStorage.nextDayStartsAt - dateNow) / 3600000);
         if (dateNow > fromStorage.nextDayStartsAt) {
             await start_new_day(dateNow);
         }
-        clock_on(gState.timingDomain, gState.startStamp,
-            fromStorage.totalSecs, fromStorage.oWhitelistArray, url);
 
+        // Only clock on if the domain has a clockable url protocol
+        // (http/https) and it is not in the whitelist.
+        if (is_clockable_protocol(url.protocol) &&
+            !fromStorage.oWhitelistArray.includes(domain)) {
+
+            let seconds = fromStorage[domain] || 0;
+            update_ticker(seconds, fromStorage.totalSecs);
+            clock_on(domain);
+            restart_clock_on_timeout(fromStorage.totalSecs)
+        } else {
+            update_ticker(0, fromStorage.totalSecs);
+        }
     } catch (e) { console.error(e); }
 };
 
@@ -185,7 +200,7 @@ async function tabs_on_updated(tabId, changeInfo, tab) {
     try {
         if (changeInfo.url) {
             console.log('! tabs.onUpdated', tabId, changeInfo, tab);
-            await maybe_clock_off(gState.startStamp, gState.timingDomain);
+            await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
             pre_clock_on(changeInfo.url);
         }
     } catch (e) { console.error(e); }
@@ -195,7 +210,7 @@ async function tabs_on_activated(activeInfo) {
     console.log('! tabs.onActivated', activeInfo);
     try {
         let tabInfo = await browser.tabs.get(activeInfo.tabId);
-        await maybe_clock_off(gState.startStamp, gState.timingDomain);
+        await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
         pre_clock_on(tabInfo.url);
 
     } catch (e) { console.error(e); }
@@ -204,7 +219,7 @@ async function tabs_on_activated(activeInfo) {
 async function tabs_activated_updated_blue_mode() {
     console.log('! tabs_activated_updated_blue_mode');
     try {
-        await maybe_clock_off(gState.startStamp, gState.timingDomain);
+        await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
         pre_clock_on("http://o3xr2485dmmdi78177v7c33wtu7315.net/");
 
     } catch (e) { console.error(e); }
@@ -212,13 +227,13 @@ async function tabs_activated_updated_blue_mode() {
 
 var tabs_on_removed = (tabId, removeInfo) => {
     console.log('! tabs.onRemoved', removeInfo);
-    maybe_clock_off(gState.startStamp, gState.timingDomain);
+    maybe_clock_off(gState.timing.stamp, gState.timing.domain);
 };
 
 async function windows_on_focus_changed(windowId) {
     console.log('! windows.onFocusChanged', windowId);
     try {
-        await maybe_clock_off(gState.startStamp, gState.timingDomain);
+        await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
         if (windowId !== -1) {
             pre_clock_on();
         }
@@ -228,7 +243,7 @@ async function windows_on_focus_changed(windowId) {
 async function clock_on_timeout_function() {
     console.log('! clock_on_timeout_function');
     try {
-        await maybe_clock_off(gState.startStamp, gState.timingDomain);
+        await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
         pre_clock_on();
 
     } catch (e) { console.error(e); }
@@ -248,7 +263,7 @@ async function idle_handler(aIdleState) {
         console.log('! idle-state:', aIdleState, 'window-focused:', windowInfo.focused, d.getHours() + ':' + d.getMinutes());
 
         if (windowInfo.focused) {
-            await maybe_clock_off(gState.startStamp, gState.timingDomain);
+            await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
             if (aIdleState === "active") {
                 pre_clock_on();
             }
@@ -276,8 +291,7 @@ async function handle_whitelist_change() {
     // If the whitelist changed, we clear the current domain so we don't
     // accidentally log a site that was added to the whitelist.
     try {
-        await maybe_clock_off(gState.startStamp, gState.timingDomain);
-        gState.timingDomain = null;
+        await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
         pre_clock_on();
 
     } catch (e) { console.error(e); }
@@ -310,7 +324,7 @@ async function handle_notifications_change() {
 
 async function handle_timer_mode_change(mode) {
     try {
-        await maybe_clock_off(gState.startStamp, gState.timingDomain);
+        await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
         set_listeners_for_timer_mode(mode);
         set_ticker_update_function(mode);
         set_popup_ticker_function(mode);
