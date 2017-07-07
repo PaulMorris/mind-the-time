@@ -77,6 +77,7 @@ async function log_seconds(aDomain, aRawSeconds) {
 };
 
 async function maybe_clock_off(aState) {
+    console.log('maybe_clock_off', gState);
     try {
         if (aState.startStamp) {
             console.log('clock off');
@@ -106,33 +107,33 @@ var get_clock_on_timeout_MS = (aTotalSecs) => {
 };
 
 // handle request to start timing for a site
-async function clock_on(aState, fromStorage, aUrl) {
-    console.log('clock_on', aUrl);
+async function clock_on(aTimingDomain, aStartStamp, aTotalSecs, aWhitelistArray, aUrl) {
+    console.log('clock_on', aUrl, gState);
 
     // Check if the domain is clockable and update ticker.
     // Only deal with the domain if it is different from the last clock on,
     // is a clockable url protocol (http/https), and is not in the whitelist.
     let url = new URL(aUrl),
         domain = url.host;
-    if (domain !== aState.timingDomain &&
+    if (domain !== aTimingDomain &&
         is_clockable_protocol(url.protocol) &&
-        !fromStorage.oWhitelistArray.includes(domain)) {
+        !aWhitelistArray.includes(domain)) {
 
-        aState.timingDomain = domain;
+        gState.timingDomain = domain;
         try {
             let result = await STORAGE.get(domain);
-            update_ticker(result[domain], fromStorage.totalSecs);
+            update_ticker(result[domain], aTotalSecs);
 
         } catch (e) { console.error(e); }
 
     } else {
-        update_ticker(0, fromStorage.totalSecs);
+        update_ticker(0, aTotalSecs);
         return;
     }
 
     // clock off should really always happen before clock on, and
-    // clock off sets aState.startStamp to null, so error if it's not null here
-    if (aState.startStamp) {
+    // clock off sets gState.startStamp to null, so error if it's not null here
+    if (aStartStamp) {
         console.warn("Mind the Time: clock on without prior clock off");
     } else {
         // set the starting time stamp
@@ -143,7 +144,7 @@ async function clock_on(aState, fromStorage, aUrl) {
     // we set this timeout to clock on again after the next minute threshold has passed,
     // for when the user has been active at same site/tab for more than a minute
     // and we need to clock off and back on to update the ticker, notifications, etc.
-    let ms = get_clock_on_timeout_MS(fromStorage.totalSecs);
+    let ms = get_clock_on_timeout_MS(aTotalSecs);
     gState.clockOnTimeout = setTimeout(clock_on_timeout_function, ms);
 };
 
@@ -158,15 +159,16 @@ async function get_current_url() {
 
 async function pre_clock_on_2(aUrl) {
     try {
-        let url = aUrl || await get_current_url(),
-            fromStorage = await STORAGE.get(["nextDayStartsAt", "oWhitelistArray", "totalSecs"]),
-            dateNow = Date.now();
+        let dateNow = Date.now(),
+            url = aUrl || await get_current_url(),
+            fromStorage = await STORAGE.get(["nextDayStartsAt", "oWhitelistArray", "totalSecs"]);
 
         // console.log('hours until new day:', (fromStorage.nextDayStartsAt - dateNow) / 3600000);
         if (dateNow > fromStorage.nextDayStartsAt) {
             await start_new_day(dateNow);
         }
-        clock_on(gState, fromStorage, url);
+        clock_on(gState.timingDomain, gState.startStamp,
+            fromStorage.totalSecs, fromStorage.oWhitelistArray, url);
 
     } catch (e) { console.error(e); }
 };
