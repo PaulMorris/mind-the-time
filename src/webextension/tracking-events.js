@@ -76,20 +76,19 @@ async function log_seconds(aDomain, aRawSeconds) {
     } catch (e) { console.error(e); }
 };
 
-async function maybe_clock_off(aState) {
-    console.log('maybe_clock_off', gState);
+async function maybe_clock_off(aStartStamp, aTimingDomain) {
+    console.log('maybe_clock_off', aTimingDomain, aStartStamp);
     try {
-        if (aState.startStamp) {
-            console.log('clock off');
-            let startStamp = aState.startStamp;
+        if (aStartStamp) {
+            console.log('clock off', aTimingDomain, aStartStamp);
 
             // null timestamp means don't clock off again until after clock on
             gState.startStamp = null;
-            clearTimeout(aState.clockOnTimeout);
+            clearTimeout(gState.clockOnTimeout);
 
-            let rawSeconds = (Date.now() - startStamp) / 1000;
+            let rawSeconds = (Date.now() - aStartStamp) / 1000;
             if (rawSeconds > 1) {
-                await log_seconds(aState.timingDomain, rawSeconds);
+                await log_seconds(aTimingDomain, rawSeconds);
                 maybe_show_notification();
             }
         }
@@ -186,7 +185,7 @@ async function tabs_on_updated(tabId, changeInfo, tab) {
     try {
         if (changeInfo.url) {
             console.log('tabs.onUpdated', tabId, changeInfo, tab);
-            await maybe_clock_off(gState);
+            await maybe_clock_off(gState.startStamp, gState.timingDomain);
             pre_clock_on(changeInfo.url);
         }
     } catch (e) { console.error(e); }
@@ -196,7 +195,7 @@ async function tabs_on_activated(activeInfo) {
     console.log('tabs.onActivated', activeInfo);
     try {
         let tabInfo = await browser.tabs.get(activeInfo.tabId);
-        await maybe_clock_off(gState);
+        await maybe_clock_off(gState.startStamp, gState.timingDomain);
         pre_clock_on(tabInfo.url);
 
     } catch (e) { console.error(e); }
@@ -205,7 +204,7 @@ async function tabs_on_activated(activeInfo) {
 async function tabs_activated_updated_blue_mode() {
     console.log('tabs_activated_updated_blue_mode');
     try {
-        await maybe_clock_off(gState);
+        await maybe_clock_off(gState.startStamp, gState.timingDomain);
         pre_clock_on("http://o3xr2485dmmdi78177v7c33wtu7315.net/");
 
     } catch (e) { console.error(e); }
@@ -213,13 +212,13 @@ async function tabs_activated_updated_blue_mode() {
 
 var tabs_on_removed = (tabId, removeInfo) => {
     console.log('tabs.onRemoved', removeInfo);
-    maybe_clock_off(gState);
+    maybe_clock_off(gState.startStamp, gState.timingDomain);
 };
 
 async function windows_on_focus_changed(windowId) {
     console.log('windows.onFocusChanged', windowId);
     try {
-        await maybe_clock_off(gState);
+        await maybe_clock_off(gState.startStamp, gState.timingDomain);
         if (windowId !== -1) {
             pre_clock_on();
         }
@@ -229,7 +228,7 @@ async function windows_on_focus_changed(windowId) {
 async function clock_on_timeout_function() {
     console.log('clock_on_timeout_function');
     try {
-        await maybe_clock_off(gState);
+        await maybe_clock_off(gState.startStamp, gState.timingDomain);
         pre_clock_on();
 
     } catch (e) { console.error(e); }
@@ -249,7 +248,7 @@ async function idle_handler(aIdleState) {
         console.log('idle-state:', aIdleState, 'window-focused:', windowInfo.focused, d.getHours() + ':' + d.getMinutes());
 
         if (windowInfo.focused) {
-            await maybe_clock_off(gState);
+            await maybe_clock_off(gState.startStamp, gState.timingDomain);
             if (aIdleState === "active") {
                 pre_clock_on();
             }
@@ -277,7 +276,7 @@ async function handle_whitelist_change() {
     // If the whitelist changed, we clear the current domain so we don't
     // accidentally log a site that was added to the whitelist.
     try {
-        await maybe_clock_off(gState);
+        await maybe_clock_off(gState.startStamp, gState.timingDomain);
         gState.timingDomain = null;
         pre_clock_on();
 
@@ -311,7 +310,7 @@ async function handle_notifications_change() {
 
 async function handle_timer_mode_change(mode) {
     try {
-        await maybe_clock_off(gState);
+        await maybe_clock_off(gState.startStamp, gState.timingDomain);
         set_listeners_for_timer_mode(mode);
         set_ticker_update_function(mode);
         set_popup_ticker_function(mode);
