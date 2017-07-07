@@ -101,7 +101,7 @@ async function maybe_clock_off(aStartStamp, aTimingDomain) {
             });
 
             let rawSeconds = (Date.now() - aStartStamp) / 1000;
-            if (rawSeconds > 1) {
+            if (rawSeconds > 0.5) {
                 await log_seconds(aTimingDomain, rawSeconds);
                 maybe_show_notification();
             }
