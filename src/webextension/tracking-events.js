@@ -107,7 +107,7 @@ var get_clock_on_timeout_MS = (aTotalSecs) => {
 
 // handle request to start timing for a site
 async function clock_on(aTimingDomain, aStartStamp, aTotalSecs, aWhitelistArray, aUrl) {
-    console.log('clock_on', aUrl, gState);
+    console.log('clock_on', aUrl, 'aTimingDomain: ', aTimingDomain, 'aStartStamp: ', aStartStamp, 'aTotalSecs: ', aTotalSecs);
 
     // Check if the domain is clockable and update ticker.
     // Only deal with the domain if it is different from the last clock on,
@@ -184,7 +184,7 @@ var pre_clock_on = (aUrl) => {
 async function tabs_on_updated(tabId, changeInfo, tab) {
     try {
         if (changeInfo.url) {
-            console.log('tabs.onUpdated', tabId, changeInfo, tab);
+            console.log('! tabs.onUpdated', tabId, changeInfo, tab);
             await maybe_clock_off(gState.startStamp, gState.timingDomain);
             pre_clock_on(changeInfo.url);
         }
@@ -192,7 +192,7 @@ async function tabs_on_updated(tabId, changeInfo, tab) {
 };
 
 async function tabs_on_activated(activeInfo) {
-    console.log('tabs.onActivated', activeInfo);
+    console.log('! tabs.onActivated', activeInfo);
     try {
         let tabInfo = await browser.tabs.get(activeInfo.tabId);
         await maybe_clock_off(gState.startStamp, gState.timingDomain);
@@ -202,7 +202,7 @@ async function tabs_on_activated(activeInfo) {
 };
 
 async function tabs_activated_updated_blue_mode() {
-    console.log('tabs_activated_updated_blue_mode');
+    console.log('! tabs_activated_updated_blue_mode');
     try {
         await maybe_clock_off(gState.startStamp, gState.timingDomain);
         pre_clock_on("http://o3xr2485dmmdi78177v7c33wtu7315.net/");
@@ -211,12 +211,12 @@ async function tabs_activated_updated_blue_mode() {
 };
 
 var tabs_on_removed = (tabId, removeInfo) => {
-    console.log('tabs.onRemoved', removeInfo);
+    console.log('! tabs.onRemoved', removeInfo);
     maybe_clock_off(gState.startStamp, gState.timingDomain);
 };
 
 async function windows_on_focus_changed(windowId) {
-    console.log('windows.onFocusChanged', windowId);
+    console.log('! windows.onFocusChanged', windowId);
     try {
         await maybe_clock_off(gState.startStamp, gState.timingDomain);
         if (windowId !== -1) {
@@ -226,7 +226,7 @@ async function windows_on_focus_changed(windowId) {
 };
 
 async function clock_on_timeout_function() {
-    console.log('clock_on_timeout_function');
+    console.log('! clock_on_timeout_function');
     try {
         await maybe_clock_off(gState.startStamp, gState.timingDomain);
         pre_clock_on();
@@ -245,7 +245,7 @@ async function idle_handler(aIdleState) {
         let windowInfo = await browser.windows.getLastFocused();
 
         let d = new Date;
-        console.log('idle-state:', aIdleState, 'window-focused:', windowInfo.focused, d.getHours() + ':' + d.getMinutes());
+        console.log('! idle-state:', aIdleState, 'window-focused:', windowInfo.focused, d.getHours() + ':' + d.getMinutes());
 
         if (windowInfo.focused) {
             await maybe_clock_off(gState.startStamp, gState.timingDomain);
