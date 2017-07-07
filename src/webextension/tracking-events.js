@@ -80,28 +80,24 @@ async function log_seconds(aDomain, aRawSeconds) {
     }
 };
 
-async function log_and_notify(aDomain, aRawSeconds) {
+async function maybe_clock_off(aState) {
     try {
-        await log_seconds(aDomain, aRawSeconds);
-        maybe_show_notification();
+        if (aState.startStamp) {
+            console.log('clock off');
+            let startStamp = aState.startStamp;
+
+            // null timestamp means don't clock off again until after clock on
+            gState.startStamp = null;
+            clearTimeout(aState.clockOnTimeout);
+
+            let rawSeconds = (Date.now() - startStamp) / 1000;
+            if (rawSeconds > 1) {
+                await log_seconds(aState.timingDomain, rawSeconds);
+                maybe_show_notification();
+            }
+        }
     } catch (e) {
         console.error(e);
-    }
-};
-
-var maybe_clock_off = (aState) => {
-    if (aState.startStamp) {
-        console.log('clock off');
-        let startStamp = aState.startStamp;
-
-        // null timestamp means don't clock off again until after clock on
-        gState.startStamp = null;
-        clearTimeout(aState.clockOnTimeout);
-
-        let rawSeconds = (Date.now() - startStamp) / 1000;
-        if (rawSeconds > 1) {
-            log_and_notify(aState.timingDomain, rawSeconds);
-        }
     }
 };
 
@@ -192,11 +188,15 @@ var pre_clock_on = (aUrl) => {
 
 // EVENT HANDLING
 
-var tabs_on_updated = (tabId, changeInfo, tab) => {
-    if (changeInfo.url) {
-        console.log('tabs.onUpdated', tabId, changeInfo, tab);
-        maybe_clock_off(gState);
-        pre_clock_on(changeInfo.url);
+async function tabs_on_updated(tabId, changeInfo, tab) {
+    try {
+        if (changeInfo.url) {
+            console.log('tabs.onUpdated', tabId, changeInfo, tab);
+            await maybe_clock_off(gState);
+            pre_clock_on(changeInfo.url);
+        }
+    } catch (e) {
+        console.error(e);
     }
 };
 
@@ -204,17 +204,21 @@ async function tabs_on_activated(activeInfo) {
     console.log('tabs.onActivated', activeInfo);
     try {
         let tabInfo = await browser.tabs.get(activeInfo.tabId);
-        maybe_clock_off(gState);
+        await maybe_clock_off(gState);
         pre_clock_on(tabInfo.url);
     } catch (e) {
         console.error(e);
     }
 };
 
-var tabs_activated_updated_blue_mode = () => {
+async function tabs_activated_updated_blue_mode() {
     console.log('tabs_activated_updated_blue_mode');
-    maybe_clock_off(gState);
-    pre_clock_on("http://o3xr2485dmmdi78177v7c33wtu7315.net/");
+    try {
+        await maybe_clock_off(gState);
+        pre_clock_on("http://o3xr2485dmmdi78177v7c33wtu7315.net/");
+    } catch (e) {
+        console.error(e);
+    }
 };
 
 var tabs_on_removed = (tabId, removeInfo) => {
@@ -222,18 +226,26 @@ var tabs_on_removed = (tabId, removeInfo) => {
     maybe_clock_off(gState);
 };
 
-var windows_on_focus_changed = (windowId) => {
+async function windows_on_focus_changed(windowId) {
     console.log('windows.onFocusChanged', windowId);
-    maybe_clock_off(gState);
-    if (windowId !== -1) {
-        pre_clock_on();
+    try {
+        await maybe_clock_off(gState);
+        if (windowId !== -1) {
+            pre_clock_on();
+        }
+    } catch (e) {
+        console.error(e);
     }
 };
 
-var clock_on_timeout_function = () => {
+async function clock_on_timeout_function() {
     console.log('clock_on_timeout_function');
-    maybe_clock_off(gState);
-    pre_clock_on();
+    try {
+        await maybe_clock_off(gState);
+        pre_clock_on();
+    } catch (e) {
+        console.error(e);
+    }
 };
 
 
@@ -250,7 +262,7 @@ async function idle_handler(aIdleState) {
         console.log('idle-state:', aIdleState, 'window-focused:', windowInfo.focused, d.getHours() + ':' + d.getMinutes());
 
         if (windowInfo.focused) {
-            maybe_clock_off(gState);
+            await maybe_clock_off(gState);
             if (aIdleState === "active") {
                 pre_clock_on();
             }
@@ -275,6 +287,18 @@ var storage_change_inspector = (changes) => {
     return result;
 };
 */
+
+async function handle_whitelist_change() {
+    // If the whitelist changed, we clear the current domain so we don't
+    // accidentally log a site that was added to the whitelist.
+    try {
+        await maybe_clock_off(gState);
+        gState.timingDomain = null;
+        pre_clock_on();
+    } catch (e) {
+        console.error(e);
+    }
+};
 
 async function handle_day_start_offset_change(aDayStartOffset) {
     let dateNow = Date.now(),
@@ -304,13 +328,17 @@ async function handle_notifications_change() {
     }
 };
 
-var handle_timer_mode_change = (mode) => {
-    maybe_clock_off(gState);
-    set_listeners_for_timer_mode(mode);
-    set_ticker_update_function(mode);
-    set_popup_ticker_function(mode);
-    set_badge_for_timer_mode(mode);
-    pre_clock_on();
+async function handle_timer_mode_change(mode) {
+    try {
+        await maybe_clock_off(gState);
+        set_listeners_for_timer_mode(mode);
+        set_ticker_update_function(mode);
+        set_popup_ticker_function(mode);
+        set_badge_for_timer_mode(mode);
+        pre_clock_on();
+    } catch (e) {
+        console.error(e);
+    }
 };
 
 // Even when a new value is the same as the old value it will fire this listener.
@@ -335,10 +363,6 @@ browser.storage.onChanged.addListener((changes, area) => {
         handle_day_start_offset_change(changes.oDayStartOffset.newValue);
     }
     if (changes.oWhitelistArray && changes.oWhitelistArray.newValue) {
-        // if the whitelist changed, we clear this so we don't
-        // accidentally log a site that was added to the whitelist
-        maybe_clock_off(gState);
-        gState.timingDomain = null;
-        pre_clock_on();
+        handle_whitelist_change();
     }
 });
