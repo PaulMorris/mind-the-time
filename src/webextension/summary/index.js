@@ -550,6 +550,8 @@ start_load();
 
 
 // FOR TESTING NEW DAY CODE
+// Uncomment these functions and call test_new_day on the summary page using
+// browser dev tools.
 /*
 async function test_new_day_2(dnow) {
     await gBackground.maybe_clock_off(gBackground.gState.timing.stamp, gBackground.gState.timing.domain);
@@ -559,7 +561,7 @@ async function test_new_day_2(dnow) {
 }
 
 function test_new_day(dnow = Date.now()) {
-    gBackground.pre_clock_on(["http://mozilla.org", "http://gnu.org", "http://ubuntu.org"][dnow % 3]);
+    gBackground.pre_clock_on_2(new URL(["http://mozilla.org", "http://gnu.org", "http://ubuntu.org"][dnow % 3]));
     setTimeout(test_new_day_2.bind(null, dnow + 86400001), 2000);
 };
 */

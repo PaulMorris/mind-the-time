@@ -144,11 +144,12 @@ function is_clockable_protocol(aProt) {
     return aProt === 'http:' || aProt === 'https:';
 };
 
-async function pre_clock_on_2() {
+async function pre_clock_on_2(aUrl) {
     // Maybe starts a new day, updates the ticker, and maybe clocks on.
+    // aUrl parameter is used for testing new day change.
     try {
         // In blue mode get_current_url returns a special blue mode url.
-        let url = await get_current_url(),
+        let url = aUrl || await get_current_url(),
             domain = url.host,
             dateNow = Date.now(),
             fromStorage = await STORAGE.get([
