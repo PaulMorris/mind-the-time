@@ -199,7 +199,9 @@ async function tabs_on_updated(tabId, changeInfo, tab) {
         console.log('! tabs.onUpdated', tabId, changeInfo, tab);
         try {
             await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
-            pre_clock_on(new URL(changeInfo.url));
+            // The updated tab may not be the active tab,
+            // so don't pass a URL to pre_clock_on.
+            pre_clock_on();
 
         } catch (e) { console.error(e); }
     }
@@ -208,9 +210,8 @@ async function tabs_on_updated(tabId, changeInfo, tab) {
 async function tabs_on_activated(activeInfo) {
     console.log('! tabs.onActivated', activeInfo);
     try {
-        let tabInfo = await browser.tabs.get(activeInfo.tabId);
         await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
-        pre_clock_on(new URL(tabInfo.url));
+        pre_clock_on();
 
     } catch (e) { console.error(e); }
 };
