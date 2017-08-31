@@ -195,38 +195,33 @@ function pre_clock_on() {
 
 // EVENT HANDLING
 
-async function tabs_on_updated(tabId, changeInfo, tab) {
+async function maybe_clock_off_then_pre_clock_on() {
+    try {
+        await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
+        pre_clock_on();
+    } catch (e) { console.error(e); }
+};
+
+function tabs_on_updated(tabId, changeInfo, tab) {
     // Only handle updates to urls, not other kinds of updates.
+    // The updated tab may not be the active tab,
+    // so there's no point in passing a URL as an argument.
     if (changeInfo.url) {
         console.log('! tabs.onUpdated', tabId, changeInfo, tab);
-        try {
-            await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
-            // The updated tab may not be the active tab,
-            // so don't pass a URL to pre_clock_on.
-            pre_clock_on();
-
-        } catch (e) { console.error(e); }
+        maybe_clock_off_then_pre_clock_on();
     }
 };
 
-async function tabs_on_activated(activeInfo) {
+function tabs_on_activated(activeInfo) {
     console.log('! tabs.onActivated', activeInfo);
-    try {
-        await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
-        pre_clock_on();
-
-    } catch (e) { console.error(e); }
+    maybe_clock_off_then_pre_clock_on();
 };
 
-async function tabs_on_removed(tabId, removeInfo) {
+function tabs_on_removed(tabId, removeInfo) {
     console.log('! tabs.onRemoved', removeInfo);
-    try {
-        await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
-        // It may not be the active tab that was removed,
-        // so we also clock on just in case.
-        pre_clock_on();
-
-    } catch (e) { console.error(e); }
+    // It may not be the active tab that was removed,
+    // so we clock off AND back on to cover that case.
+    maybe_clock_off_then_pre_clock_on();
 };
 
 async function windows_on_focus_changed(windowId) {
@@ -239,13 +234,9 @@ async function windows_on_focus_changed(windowId) {
     } catch (e) { console.error(e); }
 };
 
-async function clock_on_timeout_function() {
+function clock_on_timeout_function() {
     console.log('! clock_on_timeout_function');
-    try {
-        await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
-        pre_clock_on();
-
-    } catch (e) { console.error(e); }
+    maybe_clock_off_then_pre_clock_on();
 };
 
 
@@ -276,7 +267,7 @@ async function idle_handler(aIdleState) {
 
 // For logging of storage changes, just show the new values.
 /*
-var storage_change_inspector = (changes) => {
+function storage_change_inspector(changes) {
     let keys = Object.keys(changes);
     let result = {};
     for (let key of keys) {
@@ -286,14 +277,10 @@ var storage_change_inspector = (changes) => {
 };
 */
 
-async function handle_whitelist_change() {
+function handle_whitelist_change() {
     // If the whitelist changed, we clear the current domain so we don't
     // accidentally log a site that was added to the whitelist.
-    try {
-        await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
-        pre_clock_on();
-
-    } catch (e) { console.error(e); }
+    maybe_clock_off_then_pre_clock_on();
 };
 
 async function handle_day_start_offset_change(aDayStartOffset) {
