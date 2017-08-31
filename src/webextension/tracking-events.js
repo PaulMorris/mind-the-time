@@ -12,12 +12,12 @@ Clock off is always tried before clock on so that any time is logged before a
 new timing 'cycle' begins.
 */
 
-var get_next_alert_at = (aRateInMins, aTotalSecs) => {
+function get_next_alert_at(aRateInMins, aTotalSecs) {
     let rateSecs = aRateInMins * 60;
     return aTotalSecs + (rateSecs - (aTotalSecs % rateSecs));
 };
 
-var get_notification_message = (aStorage) => {
+function get_notification_message(aStorage) {
     let domainData = extract_domain_data(aStorage),
         domainsArray = get_sorted_domains(domainData),
         topFive = domainsArray.slice(0, 3),
@@ -107,7 +107,7 @@ async function maybe_clock_off(aStartStamp, aTimingDomain) {
     } catch (e) { console.error(e); }
 };
 
-var get_clock_on_timeout_MS = (aTotalSecs) => {
+function get_clock_on_timeout_MS(aTotalSecs) {
     // Wait at least some minimum amount.
     let secsUntilNextMinute = (62 - (aTotalSecs % 60)),
         min = 5,
@@ -140,7 +140,9 @@ async function clock_on(aDomain) {
     });
 };
 
-var is_clockable_protocol = (aProt) => (aProt === 'http:' || aProt === 'https:');
+function is_clockable_protocol(aProt) {
+    return aProt === 'http:' || aProt === 'https:';
+};
 
 async function get_current_url() {
     // returns a promise that resolves to the url of the active window/tab
@@ -184,7 +186,7 @@ async function pre_clock_on_2(aUrl) {
     } catch (e) { console.error(e); }
 };
 
-var pre_clock_on = (aUrl) => {
+function pre_clock_on(aUrl) {
     // avoid redundant clock_on calls for the same event
     clearTimeout(gState.preClockOnTimeout);
     let f = aUrl ? pre_clock_on_2.bind(null, aUrl) : pre_clock_on_2;

@@ -21,14 +21,14 @@ var gTodayStamp;
 
 // TABLE CONSTRUCTION
 
-var put_in_td = (elem) => {
+function put_in_td(elem) {
     let td = document.createElement('td'),
         child = (typeof elem === 'string' ? document.createTextNode(elem) : elem);
     td.appendChild(child);
     return td;
 };
 
-var put_tds_in_a_row = (tds) => {
+function put_tds_in_a_row(tds) {
     let row = document.createElement('tr');
     for (let td of tds) {
         row.appendChild(td);
@@ -36,7 +36,7 @@ var put_tds_in_a_row = (tds) => {
     return row;
 };
 
-var make_graph = (secs) => {
+function make_graph(secs) {
     let minsPerPx = 2,
         totalMins = Math.floor(secs / 60),
         hours = Math.floor(totalMins / 60),
@@ -60,7 +60,7 @@ var make_graph = (secs) => {
     return graphUL;
 };
 
-var make_header_row = (header) => {
+function make_header_row(header) {
     let h4 = document.createElement('h4');
     h4.setAttribute('class', 'dateheader');
     h4.appendChild( document.createTextNode(header) );
@@ -75,7 +75,7 @@ var make_header_row = (header) => {
     return row;
 };
 
-var make_day_summary_row = (boxID, c, tsecs, dayItem) => {
+function make_day_summary_row(boxID, c, tsecs, dayItem) {
     let percent = (tsecs === 0 ? "0%" : Math.round( (dayItem[1] / tsecs) * 100) + "%"),
         time = format_time(dayItem[1]),
         graph = make_graph(dayItem[1]),
@@ -89,7 +89,7 @@ var make_day_summary_row = (boxID, c, tsecs, dayItem) => {
     return row;
 };
 
-var make_domain_row = (boxID, c, tsecs, dmnsItem, rowsShown) => {
+function make_domain_row(boxID, c, tsecs, dmnsItem, rowsShown) {
     let domainNode;
 
     // TODO: lowercase version introduced with first webextension version
@@ -121,7 +121,7 @@ var make_domain_row = (boxID, c, tsecs, dmnsItem, rowsShown) => {
     return row;
 };
 
-var make_total_row = (tsecs) => {
+function make_total_row(tsecs) {
     let nodes = [" ", "Total", format_time(tsecs), "100%", make_graph(tsecs)],
         tds = nodes.map(put_in_td),
         row = put_tds_in_a_row(tds);
@@ -129,7 +129,7 @@ var make_total_row = (tsecs) => {
     return row;
 };
 
-var make_show_more_row = (len, rowsShown, boxID) => {
+function make_show_more_row(len, rowsShown, boxID) {
     let showLink = document.createElement('a');
     showLink.setAttribute('class', 'showmore');
     showLink.appendChild( document.createTextNode("Show " + (len - rowsShown) + " More") );
@@ -148,7 +148,7 @@ var make_show_more_row = (len, rowsShown, boxID) => {
 };
 
 // handles "show/hide more rows"
-var show_or_hide_rows = (boxID, len, rowsShown, showMore) => {
+function show_or_hide_rows(boxID, len, rowsShown, showMore) {
     let i,
         showLink = document.createElement('a'),
         showCell = document.getElementById('showCell' + boxID),
@@ -182,7 +182,7 @@ var show_or_hide_rows = (boxID, len, rowsShown, showMore) => {
     }
 };
 
-var make_table = (data, aHeaderText, boxID) => {
+function make_table(data, aHeaderText, boxID) {
 
     let domainCount = data.dmnsArray.length,
         rowsShown = 10,
@@ -217,7 +217,7 @@ var make_table = (data, aHeaderText, boxID) => {
     return tab;
 };
 
-var make_empty_table_message_row = (text) => {
+function make_empty_table_message_row(text) {
     let td = put_in_td(text);
     td.colSpan = "5";
     td.setAttribute('class', 'emptytableTD');
@@ -226,7 +226,7 @@ var make_empty_table_message_row = (text) => {
     return row;
 };
 
-var make_empty_table = (header, contentText) => {
+function make_empty_table(header, contentText) {
     let headerRow = make_header_row( header),
         messageRow = make_empty_table_message_row(contentText),
         tbo = document.createElement('tbody'),
@@ -251,7 +251,7 @@ async function handle_days_button_click() {
     } catch (e) { console.error(e); }
 };
 
-var make_more_days_button = () => {
+function make_more_days_button() {
     let dayButton = document.createElement('p'),
         dayButtonText = document.createTextNode( "Show All Day Summaries" );
     dayButton.appendChild(dayButtonText);
@@ -263,11 +263,11 @@ var make_more_days_button = () => {
 
 // HIGHER LEVEL MANAGEMENT
 
-var table_needed = (data) => {
+function table_needed(data) {
     return data && data.dmnsArray.length > 0;
 }
 
-var pair_array = (a) => {
+function pair_array(a) {
     // [1,2,3,4,5] --> [[1,2],[3,4],[5]]
     let temp = a.slice(),
         arr = [];
@@ -277,21 +277,21 @@ var pair_array = (a) => {
     return arr;
 };
 
-var make_box = (boxIdNum) => {
+function make_box(boxIdNum) {
     let box = document.createElement('div');
     box.setAttribute('class','sum-box');
     box.setAttribute('id', 'box' + boxIdNum);
     return box;
 };
 
-var make_big_row = (rowIdNum) => {
+function make_big_row(rowIdNum) {
     let bigRow = document.createElement('div');
     bigRow.setAttribute('class','big-row');
     bigRow.setAttribute('id', 'row' + rowIdNum);
     return bigRow;
 };
 
-var add_day_big_rows = (boxCount, rowIdNum, boxIdNum) => {
+function add_day_big_rows(boxCount, rowIdNum, boxIdNum) {
     // creates a pattern, a paired array, which solves the problem
     // of an odd number of days needing only one box in last big row
     let pattern = pair_array( Array(boxCount).fill(true) );
@@ -309,7 +309,7 @@ var add_day_big_rows = (boxCount, rowIdNum, boxIdNum) => {
     }
 };
 
-var add_day_tables = (days, rowIdNum, boxIdNum) => {
+function add_day_tables(days, rowIdNum, boxIdNum) {
     for (let day of days) {
         if (day !== null && day.totalSecs !== 0) {
             let boxID = "box" + boxIdNum;
@@ -322,7 +322,7 @@ var add_day_tables = (days, rowIdNum, boxIdNum) => {
 
 // LOADING DATA
 
-var load_summary = (aStorage) => {
+function load_summary(aStorage) {
     let today = aStorage.today,
         domainData = gBackground.extract_domain_data(aStorage),
         headerText = "Today, " + today.headerText;
@@ -345,7 +345,7 @@ var load_summary = (aStorage) => {
 
 // first load only data for previous day, current week, and previous week
 
-var load_the_rest = (storage) => {
+function load_the_rest(storage) {
     // clear previous day and all non-day boxes, box1 to box20
     let n;
     for (n = 20; n > 0; n -= 1) {

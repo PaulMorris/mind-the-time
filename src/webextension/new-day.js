@@ -2,7 +2,7 @@
 
 "use strict";
 
-var get_week_header_text = (weekNum) => {
+function get_week_header_text(weekNum) {
     let from = new Date((weekNum + 1) * ONE_DAY_MS),
         to = new Date(from.getTime() + (6 * ONE_DAY_MS)),
         fromMonth = from.getMonth() + 1,
@@ -13,7 +13,7 @@ var get_week_header_text = (weekNum) => {
     return WEEK_WORD + " " + fromMonth + "/" + fromDate + " - " + toMonth + "/" + toDate;
 };
 
-var get_past7days_header_text = (num) => {
+function get_past7days_header_text(num) {
     let from = new Date((num - 6) * ONE_DAY_MS), // a week ago
         to = new Date(num * ONE_DAY_MS), // yesterday
         fromMonth = from.getMonth() + 1,
@@ -24,7 +24,7 @@ var get_past7days_header_text = (num) => {
     return PAST_7_DAYS_TEXT + "   " + fromMonth + "/" + fromDate + " - " + toMonth + "/" + toDate;
 };
 
-var combine_data_from_days = (sourceArray) => {
+function combine_data_from_days(sourceArray) {
     let dmns = {},
         summ = { totalSecs : 0 };
 
@@ -46,7 +46,7 @@ var combine_data_from_days = (sourceArray) => {
     return summ;
 };
 
-var get_daily_totals = (sourceArray) => {
+function get_daily_totals(sourceArray) {
     let daysArray = [];
     for (let day of sourceArray) {
         daysArray.push([
@@ -58,7 +58,7 @@ var get_daily_totals = (sourceArray) => {
     return daysArray.sort((a, b) => a[2] - b[2]);
 };
 
-var make_month_summ = (monthNum, days) => {
+function make_month_summ(monthNum, days) {
 
     let daysSubset = days.filter((day) => day && day.monthNum && day.monthNum === monthNum),
         summ = combine_data_from_days(daysSubset);
@@ -68,7 +68,7 @@ var make_month_summ = (monthNum, days) => {
     return summ;
 };
 
-var make_week_summ = (weekNum, days) => {
+function make_week_summ(weekNum, days) {
 
     let daysSubset = days.filter((day) => day && day.weekNum && day.weekNum === weekNum),
         summ = combine_data_from_days(daysSubset);
@@ -79,7 +79,7 @@ var make_week_summ = (weekNum, days) => {
     return summ;
 };
 
-var make_past7days_summ = (num, days) => {
+function make_past7days_summ(num, days) {
 
     let daysSubset = days.filter((day) => day && day.dayNum > num - 8 && day.dayNum < num),
         summ = combine_data_from_days(daysSubset);
@@ -90,7 +90,7 @@ var make_past7days_summ = (num, days) => {
     return summ;
 };
 
-var make_new_day_state = (aStorage, aDateNow) => {
+function make_new_day_state(aStorage, aDateNow) {
     // aDateNow is Date.now(), the number of milliseconds elapsed since
     // 1 January 1970 00:00:00 UTC
     // We want the day to possibly change at other times than midnight,

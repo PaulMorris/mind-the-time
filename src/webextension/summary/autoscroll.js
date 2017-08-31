@@ -1,5 +1,5 @@
 
-var current_y_position = () => {
+function current_y_position() {
     if (self.pageYOffset)
         return self.pageYOffset;
     if (document.documentElement && document.documentElement.scrollTop)
@@ -9,7 +9,7 @@ var current_y_position = () => {
     return 0;
 };
 
-var elem_y_position = (eID) => {
+function elem_y_position(eID) {
     var elm = document.getElementById(eID),
         y = elm.offsetTop,
         node = elm;
@@ -20,11 +20,11 @@ var elem_y_position = (eID) => {
     return y;
 };
 
-var scroll_some = (leapY) => {
+function scroll_some(leapY) {
     window.scrollTo(0, leapY);
 };
 
-var smooth_scroll = (eID) => {
+function smooth_scroll(eID) {
     var startY = current_y_position(),
         stopY = elem_y_position(eID) - 35,
         distance = stopY > startY ? stopY - startY : startY - stopY;

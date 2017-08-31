@@ -7,7 +7,7 @@
 const STORAGE = browser.storage.local;
 var gBackground = browser.extension.getBackgroundPage();
 
-var save_options = (event) => {
+function save_options(event) {
     let whitelistElement = document.querySelector("#whitelist"),
         whitelistArray = gBackground.sanitize_whitelist(whitelistElement.value);
     whitelistElement["value"] = whitelistArray.join(', ') || "";

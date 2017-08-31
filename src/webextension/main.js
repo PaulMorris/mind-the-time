@@ -47,26 +47,30 @@ const ONE_DAY_MS = 86400000,
 
 var gState = {};
 
-var get_null_gState = () => ({
-    timing: {
-        domain: null,
-        stamp: null
-    },
-    clockOnTimeout: null,
-    preClockOnTimeout: null,
-    notificationsMinutes: ""
-});
+function get_null_gState() {
+    return {
+        timing: {
+            domain: null,
+            stamp: null
+        },
+        clockOnTimeout: null,
+        preClockOnTimeout: null,
+        notificationsMinutes: ""
+    };
+};
 
-var is_null_or_undefined = thing => thing === null || thing === undefined;
+function is_null_or_undefined(x) {
+    return x === null || x === undefined;
+};
 
-var format_time_minimal = time => {
+function format_time_minimal(time) {
     // used for ticker button badge
     let [h, m] = time_to_hours_and_minutes(time);
     return ((h > 0) ? h + ":" : "") +
            ((h > 0) && (m < 10) ? "0" + m : m);
 };
 
-var get_next_day_starts_at = (dayNum, aDayStartOffset) => {
+function get_next_day_starts_at(dayNum, aDayStartOffset) {
     // determine when the next day starts in milliseconds since midnight on 1/1/1970
     // add one to get next day, convert to milliseconds,
     // adjust for local time zone, and add aDayStartOffset so new day starts at e.g. 4am
@@ -75,20 +79,20 @@ var get_next_day_starts_at = (dayNum, aDayStartOffset) => {
     return startsAt;
 };
 
-var get_domain_keys = aStorage => {
+function get_domain_keys(aStorage) {
     let allKeys = Object.keys(aStorage),
         domainKeys = allKeys.filter(key => !STORAGE_KEYS.includes(key));
     return domainKeys;
 };
 
-var extract_domain_data = aStorage => {
+function extract_domain_data(aStorage) {
     let domainKeys = get_domain_keys(aStorage),
         domainData = {};
     domainKeys.forEach(key => { domainData[key] = aStorage[key] });
     return domainData;
 };
 
-var get_sorted_domains = (aDomains) => {
+function get_sorted_domains(aDomains) {
     // Takes an object {domain.com: 300.121, ...} and returns a sorted array of
     // arrays, rounding to the nearest second. [[domain.com, 300], ...]
     return Object.keys(aDomains)
@@ -97,7 +101,7 @@ var get_sorted_domains = (aDomains) => {
         .sort((a, b) => b[1] - a[1]);
 };
 
-var sanitize_whitelist = oldWhitelistString => {
+function sanitize_whitelist(oldWhitelistString) {
     // takes a string (from the whitelist pref) and returns an array
     let items = oldWhitelistString.split(','),
         whitelistSet = new Set();
@@ -159,7 +163,7 @@ async function delete_all_data() {
 // negative if ahead.
 // Example: USA EST is +5 hours offset from UTC, so subtract 5 hours of MS
 // from UTC MS to get local MS.
-var get_day_number = (date) => {
+function get_day_number(date) {
     let localTimeMS = date.getTime() - (date.getTimezoneOffset() * ONE_MINUTE_MS);
 
     // console.log("timezoneOffset in hours: " + date.getTimezoneOffset() / 60);
@@ -168,25 +172,25 @@ var get_day_number = (date) => {
     return Math.floor( localTimeMS / ONE_DAY_MS );
 };
 
-var get_week_number = (dayNumber) => {
+function get_week_number(dayNumber) {
     // Returns the day number of the Sunday before the dayNumber argument.
     // We don't use Date.prototype.getDay to avoid time zone complications.
     return dayNumber - ((dayNumber - 3) % 7);
 };
 
-var get_day_header_text = (date) => {
+function get_day_header_text(date) {
     return DAY_NAMES[date.getDay()] + "   " +
         (date.getMonth() + 1) + "/" + date.getDate();
 };
 
-var get_date_with_offset = (aOffset, aDateNow) => {
+function get_date_with_offset(aOffset, aDateNow) {
     // aDateNow is Date.now(), the number of milliseconds elapsed since
     // 1 January 1970 00:00:00 UTC
     // Subtract offset in ms to get adjusted day change moment.
     return new Date(aDateNow - (aOffset * ONE_HOUR_MS));
 };
 
-var get_empty_today_object = (aDayStartOffset, aDateNow) => {
+function get_empty_today_object(aDayStartOffset, aDateNow) {
     // Used to initialize or reset today object, for add-on install, new day,
     // delete all data. aDateNow is Date.now(), the number of milliseconds
     // elapsed since 1 January 1970 00:00:00 UTC
@@ -202,7 +206,7 @@ var get_empty_today_object = (aDayStartOffset, aDateNow) => {
     };
 };
 
-var get_empty_month_summary_object = () => {
+function get_empty_month_summary_object() {
     // month summary objects don't need a daysArray
     return {
         dmnsArray: [],
@@ -211,7 +215,7 @@ var get_empty_month_summary_object = () => {
     };
 };
 
-var get_empty_summary_object = () => {
+function get_empty_summary_object() {
     let result = get_empty_month_summary_object();
     result.daysArray = [];
     return result;
@@ -221,7 +225,7 @@ var get_empty_summary_object = () => {
 // Takes aStorage object and creates a newStorage object by adding any values
 // missing from aStorage. Returns newStorage. STORAGE can then be set with newStorage.
 // Called without an argument it returns a complete initial storage object.
-var get_initial_storage = (aStorage = {}) => {
+function get_initial_storage(aStorage = {}) {
     let simpleDefaults = {
             oButtonBadgeTotal: false,
             oNotificationsOn: false,
@@ -259,7 +263,7 @@ var get_initial_storage = (aStorage = {}) => {
     return newStorage;
 };
 
-var initialize_state = () => {
+function initialize_state() {
     gState = get_null_gState();
     browser.idle.setDetectionInterval(IDLE_TIMEOUT_SECS);
 };

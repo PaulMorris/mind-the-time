@@ -27,7 +27,7 @@ async function handle_summary_button_click() {
 
 document.getElementById("summaryButton").addEventListener('click', handle_summary_button_click);
 
-var change_mode = (mode) => {
+function change_mode(mode) {
     browser.storage.local.set({timerMode: mode});
     window.close();
 };

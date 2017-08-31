@@ -4,7 +4,7 @@
 
 // Updates the internal and external timer mode indications.
 // Called when user changes the mode and on initialization/startup.
-var set_listeners_for_timer_mode = (mode) => {
+function set_listeners_for_timer_mode(mode) {
     // O: timer off
     // D: default - normal mode
     // G: green - keep timing despite inactivity (video mode)
@@ -47,12 +47,12 @@ var set_listeners_for_timer_mode = (mode) => {
 };
 
 // updates the time shown in the button badge ticker
-var update_ticker_default = (secsHere, totalSecs) => {
+function update_ticker_default(secsHere, totalSecs) {
     let value = secsHere ? format_time_minimal(secsHere) : "0";
     browser.browserAction.setBadgeText({ text: value });
 };
 
-var update_ticker_total_secs = (secsHere, totalSecs) => {
+function update_ticker_total_secs(secsHere, totalSecs) {
     browser.browserAction.setBadgeText( {text: format_time_minimal(totalSecs) });
 };
 
@@ -94,11 +94,11 @@ async function get_popup_ticker_total_only() {
 
 var get_popup_ticker;
 
-var set_popup_ticker_function = (mode) => {
+function set_popup_ticker_function(mode) {
     get_popup_ticker = mode === 'B' ? get_popup_ticker_total_only : get_popup_ticker_default;
 };
 
-var set_badge_for_timer_mode = (mode) => {
+function set_badge_for_timer_mode(mode) {
     if (mode === 'O') {
         browser.browserAction.setBadgeText({ text: "" });
     } else {
