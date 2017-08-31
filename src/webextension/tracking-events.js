@@ -226,9 +226,15 @@ async function tabs_activated_updated_blue_mode() {
     } catch (e) { console.error(e); }
 };
 
-var tabs_on_removed = (tabId, removeInfo) => {
+async function tabs_on_removed(tabId, removeInfo) {
     console.log('! tabs.onRemoved', removeInfo);
-    maybe_clock_off(gState.timing.stamp, gState.timing.domain);
+    try {
+        await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
+        // It may not be the active tab that was removed,
+        // so we also clock on just in case.
+        pre_clock_on();
+
+    } catch (e) { console.error(e); }
 };
 
 async function windows_on_focus_changed(windowId) {
