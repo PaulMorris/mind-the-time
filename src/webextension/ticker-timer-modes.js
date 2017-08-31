@@ -75,7 +75,7 @@ async function set_ticker_update_function(mode) {
 async function get_popup_ticker_default() {
     try {
         let url = await get_current_url(),
-            domain = new URL(url).host,
+            domain = url.host,
             fromStorage = await STORAGE.get([domain, 'totalSecs']);
         return format_time(fromStorage[domain] || 0) +
             "\u00a0\u00a0/\u00a0\u00a0" +

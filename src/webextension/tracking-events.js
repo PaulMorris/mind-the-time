@@ -95,10 +95,8 @@ async function maybe_clock_off(aStartStamp, aTimingDomain) {
             clearTimeout(gState.clockOnTimeout);
 
             // Clear timing data so we don't clock off again until after clock on.
-            Object.assign(gState.timing, {
-                domain: null,
-                stamp: null
-            });
+            gState.timing.domain = null;
+            gState.timing.stamp = null;
 
             let rawSeconds = (Date.now() - aStartStamp) / 1000;
             if (rawSeconds > 0.5) {
@@ -148,7 +146,7 @@ async function get_current_url() {
     // returns a promise that resolves to the url of the active window/tab
     try {
         let tabs = await browser.tabs.query({currentWindow: true, active: true});
-        return tabs[0].url;
+        return new URL(tabs[0].url);
 
     } catch (e) { console.error(e); }
 };
@@ -156,8 +154,7 @@ async function get_current_url() {
 async function pre_clock_on_2(aUrl) {
     // Maybe starts a new day, updates the ticker, and maybe clocks on.
     try {
-        let urlString = aUrl || await get_current_url(),
-            url = new URL(urlString),
+        let url = aUrl || await get_current_url(),
             domain = url.host,
             dateNow = Date.now(),
             fromStorage = await STORAGE.get([
@@ -197,13 +194,15 @@ var pre_clock_on = (aUrl) => {
 // EVENT HANDLING
 
 async function tabs_on_updated(tabId, changeInfo, tab) {
-    try {
-        if (changeInfo.url) {
-            console.log('! tabs.onUpdated', tabId, changeInfo, tab);
+    // Only handle updates to urls, not other kinds of updates.
+    if (changeInfo.url) {
+        console.log('! tabs.onUpdated', tabId, changeInfo, tab);
+        try {
             await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
-            pre_clock_on(changeInfo.url);
-        }
-    } catch (e) { console.error(e); }
+            pre_clock_on(new URL(changeInfo.url));
+
+        } catch (e) { console.error(e); }
+    }
 };
 
 async function tabs_on_activated(activeInfo) {
@@ -211,7 +210,7 @@ async function tabs_on_activated(activeInfo) {
     try {
         let tabInfo = await browser.tabs.get(activeInfo.tabId);
         await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
-        pre_clock_on(tabInfo.url);
+        pre_clock_on(new URL(tabInfo.url));
 
     } catch (e) { console.error(e); }
 };
@@ -220,7 +219,7 @@ async function tabs_activated_updated_blue_mode() {
     console.log('! tabs_activated_updated_blue_mode');
     try {
         await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
-        pre_clock_on("http://o3xr2485dmmdi78177v7c33wtu7315.net/");
+        pre_clock_on(new URL("http://o3xr2485dmmdi78177v7c33wtu7315.net/"));
 
     } catch (e) { console.error(e); }
 };
