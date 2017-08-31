@@ -54,8 +54,7 @@ function get_null_gState() {
         },
         clockOnTimeout: null,
         preClockOnTimeout: null,
-        notificationsMinutes: "",
-        blueModeUrl: null
+        notificationsMinutes: ""
     };
 };
 

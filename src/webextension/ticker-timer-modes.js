@@ -31,9 +31,29 @@ function set_listeners_for_timer_mode(mode) {
         browser.tabs.onRemoved.addListener(tabs_on_removed);
         browser.windows.onFocusChanged.addListener(windows_on_focus_changed);
     }
+};
 
-    // blue mode url
-    gState.blueModeUrl = mode === 'B' ? new URL("http://o3xr2485dmmdi78177v7c33wtu7315.net/") : null;
+async function get_current_url_default() {
+    // returns a promise that resolves to the url of the active window/tab
+    try {
+        let tabs = await browser.tabs.query({currentWindow: true, active: true});
+        return new URL(tabs[0].url);
+
+    } catch (e) { console.error(e); }
+};
+
+function get_current_url_blue_mode() {
+    // return a promise to match the async get_current_url_default
+    let url = new URL("http://o3xr2485dmmdi78177v7c33wtu7315.net/");
+    return Promise.resolve(url);
+};
+
+var get_current_url;
+
+function set_current_url_function(mode) {
+    get_current_url = mode === 'B'
+        ? get_current_url_blue_mode
+        : get_current_url_default;
 };
 
 // updates the time shown in the button badge ticker
@@ -85,7 +105,9 @@ async function get_popup_ticker_total_only() {
 var get_popup_ticker;
 
 function set_popup_ticker_function(mode) {
-    get_popup_ticker = mode === 'B' ? get_popup_ticker_total_only : get_popup_ticker_default;
+    get_popup_ticker = mode === 'B'
+        ? get_popup_ticker_total_only
+        : get_popup_ticker_default;
 };
 
 function set_badge_for_timer_mode(mode) {

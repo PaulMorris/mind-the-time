@@ -144,19 +144,11 @@ function is_clockable_protocol(aProt) {
     return aProt === 'http:' || aProt === 'https:';
 };
 
-async function get_current_url() {
-    // returns a promise that resolves to the url of the active window/tab
-    try {
-        let tabs = await browser.tabs.query({currentWindow: true, active: true});
-        return new URL(tabs[0].url);
-
-    } catch (e) { console.error(e); }
-};
-
 async function pre_clock_on_2() {
     // Maybe starts a new day, updates the ticker, and maybe clocks on.
     try {
-        let url = gState.blueModeUrl || await get_current_url(),
+        // In blue mode get_current_url returns a special blue mode url.
+        let url = await get_current_url(),
             domain = url.host,
             dateNow = Date.now(),
             fromStorage = await STORAGE.get([
@@ -312,6 +304,7 @@ async function handle_timer_mode_change(mode) {
     try {
         await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
         set_listeners_for_timer_mode(mode);
+        set_current_url_function(mode);
         set_ticker_update_function(mode);
         set_popup_ticker_function(mode);
         set_badge_for_timer_mode(mode);
