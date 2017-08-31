@@ -16,6 +16,7 @@ const ONE_DAY_MS = 86400000,
                   "September", "October", "November"],
     WEEK_WORD = "Week",
     PAST_7_DAYS_TEXT = "Past 7 Days",
+    BLUE_MODE_URL = new URL("http://o3xr2485dmmdi78177v7c33wtu7315.net/"),
     STORAGE = browser.storage.local,
     // all keys in storage that aren't domains, used to extract domain data for today
     STORAGE_KEYS = [

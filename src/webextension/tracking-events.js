@@ -187,7 +187,8 @@ async function pre_clock_on_2(aUrl) {
 var pre_clock_on = (aUrl) => {
     // avoid redundant clock_on calls for the same event
     clearTimeout(gState.preClockOnTimeout);
-    gState.preClockOnTimeout = setTimeout(pre_clock_on_2.bind(null, aUrl), 50);
+    let f = aUrl ? pre_clock_on_2.bind(null, aUrl) : pre_clock_on_2;
+    gState.preClockOnTimeout = setTimeout(f, 50);
 };
 
 
@@ -220,7 +221,7 @@ async function tabs_activated_updated_blue_mode() {
     console.log('! tabs_activated_updated_blue_mode');
     try {
         await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
-        pre_clock_on(new URL("http://o3xr2485dmmdi78177v7c33wtu7315.net/"));
+        pre_clock_on(BLUE_MODE_URL);
 
     } catch (e) { console.error(e); }
 };
