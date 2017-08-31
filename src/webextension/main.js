@@ -9,7 +9,7 @@
 const ONE_DAY_MS = 86400000,
     ONE_MINUTE_MS = 60000,
     ONE_HOUR_MS = 3600000,
-    IDLE_TIMEOUT_SECS = 15,
+    IDLE_TIMEOUT_SECS = 30,
     DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
     MONTH_NAMES = ["December", "January", "February", "March",
                   "April", "May", "June", "July", "August",
