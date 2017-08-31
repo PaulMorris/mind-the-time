@@ -7,7 +7,7 @@
 "use strict";
 
 /*
-The big idea is there are two main operations. First, 'clock on' temporarily
+There are two main operations. First, 'clock on' temporarily
 stores a domain and a starting time stamp for that domain.  Second, 'clock off'
 calculates the time elapsed since the time stamp for the domain, and adds that
 to the tally in storage for that domain.  It then clears the domain and the time
@@ -82,7 +82,7 @@ async function log_seconds(aDomain, aRawSeconds) {
             newSeconds = Math.round(aRawSeconds * 100) / 100,
             newData = {totalSecs: fromStorage.totalSecs + newSeconds};
 
-        console.log('log_seconds', newSeconds, aDomain);
+        // console.log('log_seconds', newSeconds, aDomain);
 
         newData[aDomain] = oldSeconds + newSeconds;
         STORAGE.set(newData);
@@ -91,10 +91,10 @@ async function log_seconds(aDomain, aRawSeconds) {
 };
 
 async function maybe_clock_off(aStartStamp, aTimingDomain) {
-    console.log('maybe_clock_off', aTimingDomain, aStartStamp);
+    // console.log('maybe_clock_off', aTimingDomain, aStartStamp);
     try {
         if (aStartStamp) {
-            console.log('clock off', aTimingDomain, aStartStamp);
+            // console.log('clock off', aTimingDomain, aStartStamp);
 
             clearTimeout(gState.clockOnTimeout);
 
@@ -130,7 +130,7 @@ function restart_clock_on_timeout(aTotalSecs) {
 
 async function clock_on(aDomain) {
     // Starts timing for a site.
-    console.log('clock_on', aDomain);
+    // console.log('clock_on', aDomain);
 
     // Clock off should always happen before clock on, and it sets
     // gState.timing values to null, so we warn and redo the clock off if not.
@@ -204,25 +204,25 @@ function tabs_on_updated(tabId, changeInfo, tab) {
     // The updated tab may not be the active tab,
     // so there's no point in passing a URL as an argument.
     if (changeInfo.url) {
-        console.log('! tabs.onUpdated', tabId, changeInfo, tab);
+        // console.log('! tabs.onUpdated', tabId, changeInfo, tab);
         maybe_clock_off_then_pre_clock_on();
     }
 };
 
 function tabs_on_activated(activeInfo) {
-    console.log('! tabs.onActivated', activeInfo);
+    // console.log('! tabs.onActivated', activeInfo);
     maybe_clock_off_then_pre_clock_on();
 };
 
 function tabs_on_removed(tabId, removeInfo) {
-    console.log('! tabs.onRemoved', removeInfo);
+    // console.log('! tabs.onRemoved', removeInfo);
     // It may not be the active tab that was removed,
     // so we clock off AND back on to cover that case.
     maybe_clock_off_then_pre_clock_on();
 };
 
 async function windows_on_focus_changed(windowId) {
-    console.log('! windows.onFocusChanged', windowId);
+    // console.log('! windows.onFocusChanged', windowId);
     try {
         await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
         if (windowId !== -1) {
@@ -232,7 +232,7 @@ async function windows_on_focus_changed(windowId) {
 };
 
 function clock_on_timeout_function() {
-    console.log('! clock_on_timeout_function');
+    // console.log('! clock_on_timeout_function');
     maybe_clock_off_then_pre_clock_on();
 };
 
@@ -242,12 +242,11 @@ function clock_on_timeout_function() {
 // when user is idle for IDLE_TIMEOUT_SECS we clock off, then when user becomes
 // active again we clock back on
 async function idle_handler(aIdleState) {
-    // console.log('idle state:', aIdleState);
     try {
         let windowInfo = await browser.windows.getLastFocused();
 
         let d = new Date;
-        console.log('! idle-state:', aIdleState, 'window-focused:', windowInfo.focused, d.getHours() + ':' + d.getMinutes());
+        console.log('Mind the Time. idle-state:', aIdleState, '; window-focused:', windowInfo.focused, d.getHours() + ':' + d.getMinutes());
 
         if (windowInfo.focused) {
             await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
@@ -262,7 +261,7 @@ async function idle_handler(aIdleState) {
 
 // STORAGE CHANGE LISTENER
 
-// For logging of storage changes, just show the new values.
+// For logging of storage changes, to just show the new values.
 /*
 function storage_change_inspector(changes) {
     let keys = Object.keys(changes);

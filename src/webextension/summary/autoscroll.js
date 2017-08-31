@@ -55,4 +55,4 @@ function smooth_scroll(eID) {
 };
 
 // listen for "show only 10 rows" and scroll to boxId, passed as event
-window.addEventListener('message', event => smooth_scroll(event.data), false);
+window.addEventListener('message', (event) => smooth_scroll(event.data), false);
