@@ -153,10 +153,10 @@ async function get_current_url() {
     } catch (e) { console.error(e); }
 };
 
-async function pre_clock_on_2(aUrl) {
+async function pre_clock_on_2() {
     // Maybe starts a new day, updates the ticker, and maybe clocks on.
     try {
-        let url = aUrl || await get_current_url(),
+        let url = gState.blueModeUrl || await get_current_url(),
             domain = url.host,
             dateNow = Date.now(),
             fromStorage = await STORAGE.get([
@@ -186,11 +186,10 @@ async function pre_clock_on_2(aUrl) {
     } catch (e) { console.error(e); }
 };
 
-function pre_clock_on(aUrl) {
+function pre_clock_on() {
     // avoid redundant clock_on calls for the same event
     clearTimeout(gState.preClockOnTimeout);
-    let f = aUrl ? pre_clock_on_2.bind(null, aUrl) : pre_clock_on_2;
-    gState.preClockOnTimeout = setTimeout(f, 50);
+    gState.preClockOnTimeout = setTimeout(pre_clock_on_2, 50);
 };
 
 
@@ -215,15 +214,6 @@ async function tabs_on_activated(activeInfo) {
     try {
         await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
         pre_clock_on();
-
-    } catch (e) { console.error(e); }
-};
-
-async function tabs_activated_updated_blue_mode() {
-    console.log('! tabs_activated_updated_blue_mode');
-    try {
-        await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
-        pre_clock_on(BLUE_MODE_URL);
 
     } catch (e) { console.error(e); }
 };

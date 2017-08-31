@@ -21,29 +21,19 @@ function set_listeners_for_timer_mode(mode) {
 
     // event listeners
     if (mode === 'O') {
-        browser.tabs.onUpdated.removeListener(tabs_activated_updated_blue_mode);
         browser.tabs.onUpdated.removeListener(tabs_on_updated);
-        browser.tabs.onActivated.removeListener(tabs_activated_updated_blue_mode);
         browser.tabs.onActivated.removeListener(tabs_on_activated);
         browser.tabs.onRemoved.removeListener(tabs_on_removed);
         browser.windows.onFocusChanged.removeListener(windows_on_focus_changed);
-
-    } else if (mode === 'B') {
-        browser.tabs.onUpdated.removeListener(tabs_on_updated);
-        browser.tabs.onActivated.removeListener(tabs_on_activated);
-        browser.tabs.onUpdated.addListener(tabs_activated_updated_blue_mode);
-        browser.tabs.onActivated.addListener(tabs_activated_updated_blue_mode);
-        browser.tabs.onRemoved.addListener(tabs_on_removed);
-        browser.windows.onFocusChanged.addListener(windows_on_focus_changed);
-
     } else {
-        browser.tabs.onUpdated.removeListener(tabs_activated_updated_blue_mode);
-        browser.tabs.onActivated.removeListener(tabs_activated_updated_blue_mode);
         browser.tabs.onUpdated.addListener(tabs_on_updated);
         browser.tabs.onActivated.addListener(tabs_on_activated);
         browser.tabs.onRemoved.addListener(tabs_on_removed);
         browser.windows.onFocusChanged.addListener(windows_on_focus_changed);
     }
+
+    // blue mode url
+    gState.blueModeUrl = mode === 'B' ? new URL("http://o3xr2485dmmdi78177v7c33wtu7315.net/") : null;
 };
 
 // updates the time shown in the button badge ticker
