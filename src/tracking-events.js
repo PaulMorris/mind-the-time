@@ -36,7 +36,7 @@ async function show_notification(minutes) {
             message = await get_notification_message(storage),
             id = await browser.notifications.create({
                 "type": "basic",
-                "iconUrl": browser.extension.getURL("icons/hourglass-icon-64.png"),
+                "iconUrl": browser.extension.getURL("icons/mind-the-time-icon-48.svg"),
                 "title": minutes + " Today",
                 "message": message
             });
