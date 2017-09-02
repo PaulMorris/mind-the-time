@@ -24,9 +24,9 @@ function get_next_alert_at(aRateInMins, aTotalSecs) {
 function get_notification_message(aStorage) {
     let domainData = extract_domain_data(aStorage),
         domainsArray = get_sorted_domains(domainData),
-        topFive = domainsArray.slice(0, 3),
+        topDomains = domainsArray.slice(0, 3),
         reducer = (msg, dmn) => msg + format_time(dmn[1]) + "  " + dmn[0] + "\n",
-        message = topFive.reduce(reducer, "");
+        message = topDomains.reduce(reducer, "");
     return message;
 };
 
