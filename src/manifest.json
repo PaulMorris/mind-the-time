@@ -4,6 +4,12 @@
   "version": "2.0.1",
   "description": "Keep track of how much time you spend on the web, and where you spend it. A ticker shows the time spent at the current site or total time spent on the web today. A summary page shows data for today and recent history.",
   "homepage_url": "https://addons.mozilla.org/en-US/firefox/addon/mind-the-time/",
+  "author": "Paul Morris",
+  "applications": {
+    "gecko": {
+      "id": "jid0-HYNmqxA9zQGfJADREri4n2AHKSI@jetpack"
+    }
+  },
   "icons": {
     "32": "icons/hourglass-icon-32.png"
   },
