@@ -267,38 +267,31 @@ function initialize_state() {
     browser.idle.setDetectionInterval(IDLE_TIMEOUT_SECS);
 };
 
+
 // Initialize storage, globals, etc.
-// For now this happens in data-migration.js until we say goodbye to the add-on sdk.
-/*
+
 async function handle_startup() {
     try {
-        // We make sure timerMode will always be (re)set, which causes the storage
-        // change listeners to fire, and then other listeners will be set up based
-        // on the timer mode.
+        // Get the timer mode from storage and call the function to set up
+        // listeners, etc. for the current timer mode.
         initialize_state();
-        let timerModeResult = await STORAGE.get('timerMode');
-        await STORAGE.set(timerModeResult);
-        browser.runtime.onStartup.removeListener(handle_startup);
+        let result = await STORAGE.get('timerMode');
+        handle_timer_mode_change(result.timerMode);
 
     } catch (e) { console.error(e); }
 };
 
-async function handle_installed(details) {
+function handle_installed(details) {
     // console.log("handle_installed", details.reason);
-    try {
-        if (details.reason === 'install') {
-            initialize_state();
-            await STORAGE.set(get_initial_storage());
-        } else {
-            // When details.reason is update, chrome_update, etc. then
-            // initialization is the same as for startup.
-            handle_startup();
-        }
-        browser.runtime.onInstalled.removeListener(handle_installed);
-
-    } catch (e) { console.error(e); }
+    if (details.reason === 'install') {
+        initialize_state();
+        STORAGE.set(get_initial_storage());
+    } else {
+        // When details.reason is update, chrome_update, etc. then
+        // initialization is the same as for startup.
+        handle_startup();
+    }
 };
 
 browser.runtime.onInstalled.addListener(handle_installed);
 browser.runtime.onStartup.addListener(handle_startup);
-*/
