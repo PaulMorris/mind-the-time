@@ -72,12 +72,13 @@ function update_ticker_total_secs(secsHere, totalSecs) {
 
 var update_ticker;
 
-async function set_ticker_update_function(mode) {
+async function set_ticker_update_function() {
+    // Ticker update type depends on both timer mode and the user preference/option.
     try {
-        let fromStorage = await STORAGE.get('oButtonBadgeTotal');
-        if (mode === 'O') {
+        let fromStorage = await STORAGE.get(['oButtonBadgeTotal', 'timerMode']);
+        if (fromStorage.timerMode === 'O') {
             update_ticker = () => null;
-        } else if (mode === 'B' || fromStorage.oButtonBadgeTotal) {
+        } else if (fromStorage.timerMode === 'B' || fromStorage.oButtonBadgeTotal) {
             update_ticker = update_ticker_total_secs;
         } else {
             update_ticker = update_ticker_default;

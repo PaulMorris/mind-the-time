@@ -309,7 +309,7 @@ async function handle_timer_mode_change(mode) {
         await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
         set_listeners_for_timer_mode(mode);
         set_current_url_function(mode);
-        set_ticker_update_function(mode);
+        set_ticker_update_function();
         set_popup_ticker_function(mode);
         set_badge_for_timer_mode(mode);
         pre_clock_on();
@@ -327,6 +327,9 @@ browser.storage.onChanged.addListener((changes, area) => {
     // this is involved in initialization for the timer mode on app install / restart
     if (changes.timerMode && changes.timerMode.newValue) {
         handle_timer_mode_change(changes.timerMode.newValue);
+    }
+    if (changes.oButtonBadgeTotal) {
+        set_ticker_update_function();
     }
     if ((changes.oNotificationsOn || changes.oNotificationsRate) &&
        (changes.oNotificationsOn.newValue || changes.oNotificationsRate.newValue)) {
