@@ -16,8 +16,7 @@
         "new-day.js",
         "ticker-timer-modes.js",
         "tracking-events.js",
-        "main.js",
-        "data-migration.js"
+        "main.js"
     ]
   },
   "permissions": [
