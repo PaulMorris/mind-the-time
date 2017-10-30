@@ -148,6 +148,10 @@ function is_clockable_protocol(aProt) {
     return aProt === 'http:' || aProt === 'https:';
 };
 
+function is_incognito_domain(aDomain) {
+    return aDomain === "incognito.o3xr2485dmmdi78177v7c33wtu7315.net";
+};
+
 async function pre_clock_on_2(aUrl) {
     // Maybe starts a new day, updates the ticker, and maybe clocks on.
     // aUrl parameter is used for testing new day change.
@@ -171,7 +175,8 @@ async function pre_clock_on_2(aUrl) {
         // Only clock on if the domain has a clockable url protocol
         // (http/https) and it is not in the whitelist.
         if (is_clockable_protocol(url.protocol) &&
-            !fromStorage.oWhitelistArray.includes(domain)) {
+            !fromStorage.oWhitelistArray.includes(domain) &&
+            !is_incognito_domain(domain)) {
 
             let seconds = fromStorage[domain] || 0;
             update_ticker(seconds, fromStorage.totalSecs);

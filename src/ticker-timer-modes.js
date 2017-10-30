@@ -37,27 +37,31 @@ function set_listeners_for_timer_mode(mode) {
     }
 };
 
-async function get_current_url_default() {
-    // returns a promise that resolves to the url of the active window/tab
+async function get_current_url_internal(mode) {
     try {
-        let tabs = await browser.tabs.query({currentWindow: true, active: true});
-        return new URL(tabs[0].url);
-
+        let tabs = await browser.tabs.query({currentWindow: true, active: true}),
+            tab = tabs[0];
+        if (tab.incognito) {
+            // visual confirmation ("we are not logging")
+            // (also, popup and statistics page have bugs in incognito mode)
+            browser.browserAction.disable(tab.id);
+            // override global badge color/text for this tab
+            browser.browserAction.setBadgeText({ text: "", tabId: tab.id });
+            // special incognito url (time not logged)
+            return new URL("http://incognito.o3xr2485dmmdi78177v7c33wtu7315.net/");
+        } else if (mode === 'B') {
+            // special blue-mode url
+            return new URL("http://o3xr2485dmmdi78177v7c33wtu7315.net/");
+        } else {
+            return new URL(tab.url);
+        }
     } catch (e) { console.error(e); }
-};
-
-function get_current_url_blue_mode() {
-    // return a promise to match the async get_current_url_default
-    let url = new URL("http://o3xr2485dmmdi78177v7c33wtu7315.net/");
-    return Promise.resolve(url);
 };
 
 var get_current_url;
 
 function set_current_url_function(mode) {
-    get_current_url = mode === 'B'
-        ? get_current_url_blue_mode
-        : get_current_url_default;
+    get_current_url = get_current_url_internal.bind(undefined, mode);
 };
 
 // updates the time shown in the button badge ticker
