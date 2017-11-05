@@ -124,6 +124,14 @@ function sanitize_whitelist(oldWhitelistString) {
     return [...whitelistSet];
 };
 
+async function get_current_tab() {
+    try {
+        let tabs = await browser.tabs.query({currentWindow: true, active: true});
+        return tabs[0];
+
+    } catch (e) { console.error(e); }
+};
+
 async function get_tab_by_url(aUrl) {
     try {
         let tabs = await browser.tabs.query({}),
