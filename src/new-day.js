@@ -9,18 +9,23 @@
 function get_week_header_text(weekNum) {
     let from = new Date((weekNum + 1) * ONE_DAY_MS),
         to = new Date(from.getTime() + (6 * ONE_DAY_MS)),
+        fromMonth = from.getMonth() + 1,
+        fromDate = from.getDate(),
+        toMonth = to.getMonth() + 1,
         toDate = to.getDate();
 
-    let dtf = new Intl.DateTimeFormat(undefined, {month: 'numeric', day: 'numeric'});
-    return WEEK_WORD + " " + dtf.format(from) + " - " + dtf.format(to);
+    return WEEK_WORD + " " + fromMonth + "/" + fromDate + " - " + toMonth + "/" + toDate;
 };
 
 function get_past7days_header_text(num) {
     let from = new Date((num - 6) * ONE_DAY_MS), // a week ago
         to = new Date(num * ONE_DAY_MS), // yesterday
+        fromMonth = from.getMonth() + 1,
+        fromDate = from.getDate(),
+        toMonth = to.getMonth() + 1,
         toDate = to.getDate();
-    let dtf = new Intl.DateTimeFormat(undefined, {month: 'numeric', day: 'numeric'});
-    return PAST_7_DAYS_TEXT + "   " + dtf.format(from) + " - " + dtf.format(to);
+
+    return PAST_7_DAYS_TEXT + "   " + fromMonth + "/" + fromDate + " - " + toMonth + "/" + toDate;
 };
 
 function combine_data_from_days(sourceArray) {
@@ -62,8 +67,7 @@ function make_month_summ(monthNum, days) {
     let daysSubset = days.filter((day) => day && day.monthNum && day.monthNum === monthNum),
         summ = combine_data_from_days(daysSubset);
 
-    let dtf = new Intl.DateTimeFormat(undefined, {month: 'long'});
-    summ.headerText = dtf.format(new Date(2000, monthNum - 1));
+    summ.headerText = MONTH_NAMES[monthNum % 12];
     summ.monthNum = monthNum;
     return summ;
 };

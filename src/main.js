@@ -10,6 +10,10 @@ const ONE_DAY_MS = 86400000,
     ONE_MINUTE_MS = 60000,
     ONE_HOUR_MS = 3600000,
     IDLE_TIMEOUT_SECS = 30,
+    DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    MONTH_NAMES = ["December", "January", "February", "March",
+                  "April", "May", "June", "July", "August",
+                  "September", "October", "November"],
     WEEK_WORD = "Week",
     PAST_7_DAYS_TEXT = "Past 7 Days",
     STORAGE = browser.storage.local,
@@ -174,9 +178,8 @@ function get_week_number(dayNumber) {
 };
 
 function get_day_header_text(date) {
-    let options = {weekday: 'long', month: 'numeric', day: 'numeric'};
-    let dtf = new Intl.DateTimeFormat(undefined, options);
-    return dtf.format(date);
+    return DAY_NAMES[date.getDay()] + "   " +
+        (date.getMonth() + 1) + "/" + date.getDate();
 };
 
 function get_date_with_offset(aOffset, aDateNow) {
