@@ -37,27 +37,13 @@ function set_listeners_for_timer_mode(mode) {
     }
 };
 
-async function get_current_url_default() {
-    // returns a promise that resolves to the url of the active window/tab
-    try {
-        let tabs = await browser.tabs.query({currentWindow: true, active: true});
-        return new URL(tabs[0].url);
-
-    } catch (e) { console.error(e); }
-};
-
-function get_current_url_blue_mode() {
-    // return a promise to match the async get_current_url_default
-    let url = new URL("http://o3xr2485dmmdi78177v7c33wtu7315.net/");
-    return Promise.resolve(url);
-};
-
-var get_current_url;
-
-function set_current_url_function(mode) {
-    get_current_url = mode === 'B'
-        ? get_current_url_blue_mode
-        : get_current_url_default;
+function set_pre_clock_on_2_function(mode) {
+    if (mode === 'B') {
+        let url = new URL("http://o3xr2485dmmdi78177v7c33wtu7315.net/");
+        pre_clock_on_2 = pre_clock_on_2_internal.bind(undefined, url);
+    } else {
+        pre_clock_on_2 = pre_clock_on_2_internal;
+    }
 };
 
 // updates the time shown in the button badge ticker
@@ -89,7 +75,8 @@ async function set_ticker_update_function() {
 // For updating the time shown in the popup ticker. Returns a promise/string.
 async function get_popup_ticker_default() {
     try {
-        let url = await get_current_url(),
+        let tab = await get_current_tab(),
+            url = new URL(tab.url),
             domain = url.host,
             fromStorage = await STORAGE.get([domain, 'totalSecs']);
         return format_time(fromStorage[domain] || 0) +

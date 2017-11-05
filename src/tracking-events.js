@@ -148,12 +148,13 @@ function is_clockable_protocol(aProt) {
     return aProt === 'http:' || aProt === 'https:';
 };
 
-async function pre_clock_on_2(aUrl) {
+async function pre_clock_on_2_internal(aUrl) {
     // Maybe starts a new day, updates the ticker, and maybe clocks on.
-    // aUrl parameter is used for testing new day change.
+    // aUrl parameter is bound to a special url in blue mode, and used for
+    // testing new day change.
     try {
-        // In blue mode get_current_url returns a special blue mode url.
-        let url = aUrl || await get_current_url(),
+        let tab = await get_current_tab(),
+            url = aUrl || new URL(tab.url),
             domain = url.host,
             dateNow = Date.now(),
             fromStorage = await STORAGE.get([
@@ -168,20 +169,29 @@ async function pre_clock_on_2(aUrl) {
             await start_new_day(dateNow);
         }
 
-        // Only clock on if the domain has a clockable url protocol
-        // (http/https) and it is not in the whitelist.
-        if (is_clockable_protocol(url.protocol) &&
+        // Only clock on if we are not in an incognito window,
+        // the domain has a clockable url protocol (http/https),
+        // and the domain is not in the whitelist.
+        if (tab.incognito) {
+            handle_incognito_tab(tab);
+
+        } else if (is_clockable_protocol(url.protocol) &&
             !fromStorage.oWhitelistArray.includes(domain)) {
 
             let seconds = fromStorage[domain] || 0;
             update_ticker(seconds, fromStorage.totalSecs);
             clock_on(domain);
             restart_clock_on_timeout(fromStorage.totalSecs)
+
         } else {
             update_ticker(0, fromStorage.totalSecs);
         }
     } catch (e) { console.error(e); }
 };
+
+
+// Depends on the mode (to handle blue mode).
+var pre_clock_on_2;
 
 function pre_clock_on() {
     // avoid redundant clock_on calls for the same event
@@ -308,7 +318,7 @@ async function handle_timer_mode_change(mode) {
     try {
         await maybe_clock_off(gState.timing.stamp, gState.timing.domain);
         set_listeners_for_timer_mode(mode);
-        set_current_url_function(mode);
+        set_pre_clock_on_2_function(mode);
         set_ticker_update_function();
         set_popup_ticker_function(mode);
         set_badge_for_timer_mode(mode);

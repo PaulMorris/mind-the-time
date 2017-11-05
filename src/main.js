@@ -278,6 +278,20 @@ function initialize_state() {
 
 // Initialize storage, globals, etc.
 
+function handle_incognito_tab(tab) {
+    if (tab.incognito) {
+        browser.browserAction.disable(tab.id);
+        browser.browserAction.setBadgeText({ text: "", tabId: tab.id });
+    }
+}
+
+browser.tabs.onCreated.addListener(handle_incognito_tab);
+
+async function initialize_incognito_tabs() {
+    let tabs = await browser.tabs.query({});
+    tabs.forEach(handle_incognito_tab);
+}
+
 async function handle_startup() {
     try {
         // Get the timer mode from storage and call the function to set up
@@ -285,6 +299,7 @@ async function handle_startup() {
         initialize_state();
         let result = await STORAGE.get('timerMode');
         handle_timer_mode_change(result.timerMode);
+        initialize_incognito_tabs();
 
     } catch (e) { console.error(e); }
 };
@@ -294,6 +309,7 @@ function handle_installed(details) {
     if (details.reason === 'install') {
         initialize_state();
         STORAGE.set(get_initial_storage());
+        initialize_incognito_tabs();
     } else {
         // When details.reason is update, chrome_update, etc. then
         // initialization is the same as for startup.
