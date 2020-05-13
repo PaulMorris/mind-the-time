@@ -501,6 +501,11 @@ function load_the_rest(storage) {
     document.getElementById("rowWeeks").style.display = "block";
     document.getElementById("rowDays").style.display = "block";
     document.getElementById("rowPrefs").style.display = "block";
+
+    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(storage.days));
+    var dlAnchorElem = document.getElementById('downloadAnchorElem');
+    dlAnchorElem.setAttribute("href", dataStr);
+    dlAnchorElem.setAttribute("download", "scene.json");
 };
 
 
