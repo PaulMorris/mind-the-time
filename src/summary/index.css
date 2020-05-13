@@ -182,6 +182,12 @@ tr.headerrow {
     cursor: pointer;
 }
 
+#downloadAnchorElem {
+    color: rgb(105, 112, 126);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 #showDaysButton {
     border: 1px solid grey;
     background: rgb(238, 238, 238);
