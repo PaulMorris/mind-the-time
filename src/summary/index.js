@@ -505,7 +505,7 @@ function load_the_rest(storage) {
     var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(storage.days));
     var dlAnchorElem = document.getElementById('downloadAnchorElem');
     dlAnchorElem.setAttribute("href", dataStr);
-    dlAnchorElem.setAttribute("download", "scene.json");
+    dlAnchorElem.setAttribute("download", "mind-the-time.json");
 };
 
 
