@@ -291,7 +291,7 @@ function handle_whitelist_change() {
 
 async function handle_day_start_offset_change(aDayStartOffset) {
     let dateNow = Date.now(),
-        date = get_date_with_offset(aDayStartOffset, aDateNow),
+        date = get_date_with_offset(aDayStartOffset, dateNow),
         dayNum = get_day_number(date),
         next = get_next_day_starts_at(dayNum, aDayStartOffset);
     try {
